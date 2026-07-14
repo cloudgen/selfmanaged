@@ -5,6 +5,24 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - 2026-07-14
+
+### Changed
+
+- Product version SSOT bumped to **`1.1.0`**:
+  - Runtime: `VERSION="1.1.0"` in `./selfmanaged` (and matching defaults in `app_about` / `app_version`).
+  - Docs: README Version badge + runtime SSOT prose + Last Update; [`SECURITY.md`](./SECURITY.md) supported versions (`1.1.0` current).
+  - Requirements Implementation Notes: CLI interface + self-management document live product version `1.1.0`.
+- Philosophy alignment upgraded to **[CIAO](https://github.com/cloudgen/ciao) v2.10.*** (aligned on **v2.10.2**; previously documented on the 2.9.x line) — README badge, Related Projects, and Contributing call out the 2.10.* target with CIAO-Lite.
+- CI tests read product version from the ship unit (`PRODUCT_VERSION` in `tests/helpers.sh`) instead of hardcoding `1.0.0`, so version bumps no longer break CLI / lifecycle assertions or the downgrade-sed path.
+- Companion digest **`selfmanaged.sha256`** kept as **bare 64-char hex** of `./selfmanaged` (publisher format; install still first-field-parses `hash  file` lines if present).
+- Product ship-unit header/footer: Type 0 bootstrap wording only (foreign product / reverse-lineage claims removed).
+
+### Fixed
+
+- Incomplete version-identity package after the 1.1.0 runtime bump (docs, SECURITY, REQ notes, and tests aligned together).
+- Downgrade lifecycle tests failed when `VERSION` was no longer `1.0.0` because channel aging used a frozen sed pattern; tests now rewrite the live `PRODUCT_VERSION`.
+
 ## [1.0.0] - 2026-07-13
 
 ### Added

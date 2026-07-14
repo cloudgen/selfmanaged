@@ -11,6 +11,9 @@
 : "${PASS:=0}"
 : "${FAIL:=0}"
 : "${SKIP:=0}"
+# Product VERSION SSOT from ship unit (keep tests free of frozen semver literals)
+PRODUCT_VERSION=$(grep '^VERSION="' "${SCRIPT}" 2>/dev/null | head -n1 | cut -d'"' -f2)
+: "${PRODUCT_VERSION:=unknown}"
 
 # --- output ---
 t_info()  { printf '  · %s\n' "$*"; }

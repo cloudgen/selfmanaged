@@ -1,16 +1,17 @@
 # selfmanaged - Shell script bootstrap for self Installation & Maintenance
 
-![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.1.0-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-[![CIAO](https://img.shields.io/badge/Philosophy-CIAO%20(Caution%20%E2%80%A2%20Intentional%20%E2%80%A2%20Anti--fragile%20%E2%80%A2%20Over--engineered)-purple.svg)](https://github.com/cloudgen/ciao)
+[![CIAO](https://img.shields.io/badge/Philosophy-CIAO%20v2.10.*-purple.svg)](https://github.com/cloudgen/ciao)
 [![Stars](https://img.shields.io/github/stars/cloudgen/selfmanaged?style=flat-square)](https://github.com/cloudgen/selfmanaged)
 
-POSIX `/bin/sh` **Type 0** CLI for **self-installation and self-maintenance**: install, version-check, self-update, self-uninstall, and about/diagnostics. Ship unit is the single-file script `./selfmanaged` (CIAO / CIAO-Lite defensive design).
+POSIX `/bin/sh` **Type 0** CLI for **self-installation and self-maintenance**: install, version-check, self-update, self-uninstall, and about/diagnostics. Ship unit is the single-file script `./selfmanaged` (**CIAO v2.10.*** / CIAO-Lite defensive design).
 
-Runtime version SSOT: `VERSION="1.0.0"` in `./selfmanaged`. Install channel SSOT: `SCRIPT_URL` composed from `REPO_USER` / `REPO_NAME` / `APP_NAME` (default `https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged`).
+Runtime version SSOT: `VERSION="1.1.0"` in `./selfmanaged`. Install channel SSOT: `SCRIPT_URL` composed from `REPO_USER` / `REPO_NAME` / `APP_NAME` (default `https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged`). Philosophy SSOT: **[CIAO](https://github.com/cloudgen/ciao) v2.10.*** (aligned on **v2.10.2**; Caution • Intentional • Anti-fragile • Over-engineered / Over-protect) with agent contract [CIAO-Lite](https://github.com/cloudgen/ciao-lite).
 
 ## Features
 
+- Defensive design under **CIAO v2.10.*** (upgrade from earlier 2.9.x line) and CIAO-Lite — Protection Zones, centralized `out_*`, fail-closed install integrity
 - Single-file script for direct execution and online install (`curl | sh` / `wget`)
 - User vs global install paths (`~/.local/bin` / `/usr/local/bin`)
 - **Type O empty argv = install-ensure** (not help): not installed → install (TTY confirm when interactive; automatic under pipe / quiet / json); already installed (local or global) → success no-op without `--force`
@@ -173,13 +174,13 @@ selfmanaged.sha256    # bare SHA-256 hex of that file (companion digest)
 
 | Project | Relationship |
 |---------|----------------|
-| [cloudgen/ciao](https://github.com/cloudgen/ciao) | CIAO defensive programming principles |
-| [cloudgen/ciao-lite](https://github.com/cloudgen/ciao-lite) | Agent-facing CIAO-Lite contract |
+| [cloudgen/ciao](https://github.com/cloudgen/ciao) | CIAO defensive programming principles — this product targets **v2.10.*** (currently **v2.10.2**) |
+| [cloudgen/ciao-lite](https://github.com/cloudgen/ciao-lite) | Agent-facing CIAO-Lite contract (Simplicity but Safety) |
 
 ## Contributing
 
 - Keep changes **surgical**; do not rewrite the whole script for small fixes.
-- Respect **CIAO Protection Zones** and intentional defensive checks — do not “simplify” them away.
+- Respect **CIAO v2.10.*** Protection Zones and intentional defensive checks — do not “simplify” them away.
 - After editing `./selfmanaged`, regenerate `selfmanaged.sha256` (see Examples).
 - Align user-facing docs with Config SSOTs (`VERSION`, `SCRIPT_URL`, checksum behavior).
 - Product rules live under `docs/requirements/` when present; do not invent requirement paths.
@@ -193,4 +194,4 @@ Security reporting: see [`SECURITY.md`](./SECURITY.md). Maintainer contact email
 
 ## Last Update
 
-2026-07-14 — Product **1.0.0** SSOT aligned; Type O empty argv = install-ensure (not help when already installed); integrity docs lead with automatic `${SCRIPT_URL}.sha256`; M1+ quality fixes (`app_version`, `USER_BIN` PATH, curl|wget version fetch, portable SHA-256, JSON escape, help `REPO_*`).
+2026-07-14 — **1.1.0**: runtime `VERSION="1.1.0"` aligned with README badge / CHANGELOG / SECURITY; philosophy upgraded to **CIAO v2.10.*** (v2.10.2); companion `selfmanaged.sha256` bare hex; CI tests track live product version; Type O empty argv remains install-ensure (not help when already installed); automatic `${SCRIPT_URL}.sha256` is the primary integrity path.

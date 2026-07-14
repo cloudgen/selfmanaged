@@ -94,8 +94,8 @@ run_test_install_lifecycle() {
     _err=$(cat "${_errf}" 2>/dev/null || true)
     assert_eq "version-check --json exit 0" 0 "$_ec"
     assert_contains "version-check --json type" "$_out" '"type":"ver_check"'
-    assert_contains "version-check --json local_version key" "$_out" '"local_version":"1.0.0"'
-    assert_contains "version-check --json remote_version key" "$_out" '"remote_version":"1.0.0"'
+    assert_contains "version-check --json local_version key" "$_out" "\"local_version\":\"${PRODUCT_VERSION}\""
+    assert_contains "version-check --json remote_version key" "$_out" "\"remote_version\":\"${PRODUCT_VERSION}\""
     assert_contains "version-check --json is_latest true" "$_out" '"is_latest":"true"'
     assert_not_contains "version-check --json must not put key in message" "$_out" '"message":"local_version"'
 
@@ -185,12 +185,12 @@ run_test_install_lifecycle() {
     assert_file_exists "install with good CHECKSUM" "${_sm_bin}"
 
     # --- downgrade refuse without --force; allow with --force ---
-    # Point channel at an older VERSION while local remains 1.0.0.
+    # Point channel at an older VERSION while local remains PRODUCT_VERSION.
     _older="${CI_CHANNEL_DIR}/selfmanaged"
     # shellcheck disable=SC2016
-    sed 's/^VERSION="1.0.0"/VERSION="0.9.0"/' "${SCRIPT}" > "${_older}"
+    sed "s/^VERSION=\"${PRODUCT_VERSION}\"/VERSION=\"0.9.0\"/" "${SCRIPT}" > "${_older}"
     printf '%s\n' "$(sha256sum "${_older}" | awk '{print $1}')" > "${CI_CHANNEL_DIR}/selfmanaged.sha256"
-    # ensure local is still 1.0.0 (from prior good CHECKSUM install)
+    # ensure local is still current product version (from prior good CHECKSUM install)
     assert_file_exists "local binary present for downgrade tests" "${_sm_bin}"
 
     _out=$(
@@ -202,9 +202,9 @@ run_test_install_lifecycle() {
     _err=$(cat "${_errf}" 2>/dev/null || true)
     assert_eq "self-update downgrade without --force exit 1" 1 "$_ec"
     assert_contains "self-update downgrade_blocked code" "$_err" "downgrade_blocked"
-    # local still 1.0.0
+    # local still PRODUCT_VERSION
     _loc=$(grep '^VERSION="' "${_sm_bin}" | cut -d'"' -f2)
-    assert_eq "local version unchanged after refused downgrade" "1.0.0" "$_loc"
+    assert_eq "local version unchanged after refused downgrade" "${PRODUCT_VERSION}" "$_loc"
 
     _out=$(
         HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \

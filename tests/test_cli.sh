@@ -34,7 +34,7 @@ run_test_cli() {
     _out=$(sh "${SCRIPT}" version 2>/dev/null)
     _ec=$?
     assert_eq "version exit 0" 0 "$_ec"
-    assert_contains "version human mentions version" "$_out" "1.0.0"
+    assert_contains "version human mentions version" "$_out" "${PRODUCT_VERSION}"
     assert_contains "version human mentions app" "$_out" "selfmanaged"
 
     # --- version (json) ---
@@ -43,9 +43,9 @@ run_test_cli() {
     assert_eq "version --json exit 0" 0 "$_ec"
     assert_contains "version --json type" "$_out" '"type":"version"'
     assert_contains "version --json app" "$_out" '"app":"selfmanaged"'
-    assert_contains "version --json version field" "$_out" '"version":"1.0.0"'
+    assert_contains "version --json version field" "$_out" "\"version\":\"${PRODUCT_VERSION}\""
     # app_version is the live dispatcher target (M1); no dual inline path
-    assert_contains "version human via app_version" "$(sh "${SCRIPT}" version 2>/dev/null)" "1.0.0"
+    assert_contains "version human via app_version" "$(sh "${SCRIPT}" version 2>/dev/null)" "${PRODUCT_VERSION}"
 
     # --- help (human): commands present, CHECKSUM absent ---
     _out=$(sh "${SCRIPT}" help 2>/dev/null)
@@ -111,7 +111,7 @@ run_test_cli() {
     _out=$(env -u HOME sh "${SCRIPT}" version 2>/dev/null)
     _ec=$?
     assert_eq "env -u HOME version exit 0" 0 "$_ec"
-    assert_contains "env -u HOME version still reports version" "$_out" "1.0.0"
+    assert_contains "env -u HOME version still reports version" "$_out" "${PRODUCT_VERSION}"
 
     # --- zero-arg auto-install propagates failure (not exit 0 on download fail) ---
     ci_isolated_env
