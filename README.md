@@ -13,7 +13,7 @@ Runtime version SSOT: `VERSION="1.0.0"` in `./selfmanaged`. Install channel SSOT
 
 - Single-file script for direct execution and online install (`curl | sh` / `wget`)
 - User vs global install paths (`~/.local/bin` / `/usr/local/bin`)
-- Zero-arg auto-install when not installed (TTY confirm when interactive; automatic under non-interactive / pipe)
+- **Type O empty argv = install-ensure** (not help): not installed → install (TTY confirm when interactive; automatic under pipe / quiet / json); already installed (local or global) → success no-op without `--force`
 - Centralized output (`out_*`) with `--quiet`, `--json`, `--debug`
 - Self-update / version-check against `SCRIPT_URL`
 - **Automatic checksum (SHA-256):** default install/self-update fetches `${SCRIPT_URL}.sha256` itself (no env pin); human mode is designed to show companion **link**, expected **value**, and **result**; mismatch aborts; missing sidecar warns and continues
@@ -72,7 +72,7 @@ selfmanaged about
 
 - Non-root install → typically `~/.local/bin/selfmanaged`
 - Root install → typically `/usr/local/bin/selfmanaged`
-- Already installed → success / no-op unless `--force`
+- Already installed (empty argv or `install`) → success / no-op unless `--force` (reinstall is deliberate; not required for a second one-liner)
 
 ### Prerequisites
 
@@ -83,10 +83,11 @@ selfmanaged about
 ## Usage
 
 ```sh
+selfmanaged                # empty argv: Type O install-ensure (install or already-installed)
 selfmanaged help
 selfmanaged about
 selfmanaged version
-selfmanaged install
+selfmanaged install        # same ensure semantics as empty argv
 selfmanaged version-check
 selfmanaged self-update
 selfmanaged self-uninstall
@@ -192,4 +193,4 @@ Security reporting: see [`SECURITY.md`](./SECURITY.md). Maintainer contact email
 
 ## Last Update
 
-2026-07-14 — Product **1.0.0** SSOT aligned across requirements; M1+ quality fixes (`app_version`, `USER_BIN` PATH, curl|wget version fetch, portable SHA-256, JSON escape, help `REPO_*`); integrity docs lead with automatic `${SCRIPT_URL}.sha256`.
+2026-07-14 — Product **1.0.0** SSOT aligned; Type O empty argv = install-ensure (not help when already installed); integrity docs lead with automatic `${SCRIPT_URL}.sha256`; M1+ quality fixes (`app_version`, `USER_BIN` PATH, curl|wget version fetch, portable SHA-256, JSON escape, help `REPO_*`).

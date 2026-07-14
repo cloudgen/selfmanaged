@@ -121,8 +121,8 @@ interactive   non-interactive
 
 | Command / path | Interactive (TTY, not quiet/json) | Non-interactive / quiet / json |
 |----------------|-----------------------------------|--------------------------------|
-| Zero-arg, **not** installed | `inst_maybe_install`: show note + `prompt_yes_no` install confirm | Auto path: quiet/json zero-arg → `inst_perform_install` without prompt; non-TTY human path → auto-install message + install |
-| Zero-arg, **already** installed | Dispatcher does not re-enter auto-install; default command is help | Same |
+| Zero-arg, **not** installed (**Type O**) | `inst_maybe_install`: show note + `prompt_yes_no` install confirm | Auto path: quiet/json zero-arg → `inst_perform_install` without prompt; non-TTY human path → auto-install message + install |
+| Zero-arg, **already** installed local or global (**Type O**) | `inst_perform_install` success no-op (“already installed”); **not** help; no re-download without force | Same (quiet/json: structured success no-op) |
 | `install` | Install with human `out_*` messages | No prompt; honor force for reinstall; JSON structured results |
 | `self-uninstall` | `prompt_yes_no` unless `--force` | Without force: fail closed with explicit “requires --force” (JSON: `out_json_error` / `confirm_required`); never pretend user cancelled; with `--force`: remove without confirm |
 | `self-update` / `version-check` | Human status messages | No prompts; fail loud if `SCRIPT_URL` missing; JSON structured results |
@@ -203,7 +203,7 @@ Mode-related work for selfmanaged is **not done** if any of the following fail:
 
 1. No code path blocks on `read` under `--json`, `--quiet`, or non-TTY (except documented `INTERACTIVE=1` value prompt).  
 2. Destructive uninstall without `--force` does not silently proceed in non-interactive mode.  
-3. Zero-arg not-installed path supports automation (`curl | sh` / quiet/json install path).  
+3. Zero-arg install-ensure supports automation (`curl | sh` / quiet/json): not-installed installs; already-installed (local or global) success no-op without help (`requirement-shell-cli-zero-arguments.md`).  
 4. All confirms go through `prompt_yes_no`.  
 5. Colors only when TTY and not quiet/json.  
 6. JSON/human contracts remain aligned with `requirement-shell-output-requirements.md`.  
@@ -216,6 +216,7 @@ Mode-related work for selfmanaged is **not done** if any of the following fail:
 | Artifact | Role |
 |----------|------|
 | `docs/requirements/requirement-shell-cli-interface.md` | Flags and commands |
+| `docs/requirements/requirement-shell-cli-zero-arguments.md` | Empty argv install-ensure matrix |
 | `docs/requirements/requirement-shell-output-requirements.md` | quiet/json/debug output contracts |
 | `docs/requirements/requirement-shell-self-management.md` | Uninstall confirm / force policy |
 | `docs/requirements/requirement-shell-idempotency.md` | Re-run safety under automation |

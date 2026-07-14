@@ -8,11 +8,13 @@
 # This is the single executable POSIX /bin/sh implementation of the selfmanaged
 # tool. Project requirements (docs/requirements/ only — never cite templates here):
 # - requirement-shell-cli-interface.md
+# - requirement-shell-cli-zero-arguments.md  (Type O empty argv = install-ensure)
 # - requirement-shell-idempotency.md
 # - requirement-shell-self-management.md
 # - requirement-shell-modular-function-design.md
 # - requirement-shell-output-requirements.md
 # - requirement-shell-interactive-vs-noninteractive.md
+# - requirement-shell-automatic-checksum.md
 # Plus CIAO Protection Zones and "DO NOT MODIFY" rules.
 #
 # Philosophy: CIAO (Caution • Intentional • Anti-fragile • Over-engineered)
@@ -514,7 +516,10 @@ inst_perform_install() {
         if [ "${JSON}" -eq 1 ]; then
             out_json "out_success" "${APP_NAME} is already installed."
         else
-            out_success "${APP_NAME} is already installed. Use --force to override."
+            # Success no-op: re-running curl | sh / install does not require --force.
+            # --force is only for deliberate re-download/replace (see self-update).
+            out_success "${APP_NAME} is already installed."
+            out_info "Use --force only to reinstall deliberately (or run: ${APP_NAME} self-update)."
         fi
         return 0
     fi
@@ -2448,10 +2453,13 @@ app_help() {
 #     version/about/help; expanded routing and safe defaults.
 # 2026-07-12:
 #   - Wired --force → FORCE=1 and FORCE_REINSTALL=1 (requirement-shell-cli-interface).
-#   - When already installed and argv empty, show help instead of re-prompting install.
 # 2026-07-14:
 #   - version routes through app_version (no dual inline path).
 #   - zero-arg install propagates failure exit status.
+#   - Type O empty argv: always install-ensure (not help when already installed).
+#     Cases A/B/C (not installed / local / global). --force only for deliberate
+#     re-download/replace — not required for a second one-liner run.
+#     SSOT: requirement-shell-cli-zero-arguments.md (selfmanaged = Type O).
 #
 # Last reviewed: 2026-07-14
 # =============================================================================
@@ -2465,11 +2473,20 @@ app_main() {
     : "${FORCE:=0}"
     : "${FORCE_REINSTALL:=0}"
 
-    # === AUTO-INSTALL FOR ONE-LINER (curl | sh) ===
-    # This block MUST stay at the very top: only when NOT installed and zero args.
+    # === ZERO-ARG = Type O install-ensure (curl | sh contract) ===
+    # Product type: Type O (online-install) — not Type N help-default.
+    # Empty argv always means "ensure installed", never help.
+    # Cases: not installed | installed local | installed global
+    # - not installed → install (TTY prompt via inst_maybe_install; non-TTY auto)
+    # - already installed → success no-op (inst_perform_install); no --force required
+    # - --force / FORCE_REINSTALL only for deliberate re-download/replace
     # Exit status must reflect install outcome (failed download/checksum → non-zero).
-    if ! inst_is_installed && [ $# -eq 0 ]; then
+    # SSOT: docs/requirements/requirement-shell-cli-zero-arguments.md
+    if [ $# -eq 0 ]; then
         if [ "${JSON}" -eq 1 ] || [ "${QUIET}" -eq 1 ]; then
+            inst_perform_install
+            exit $?
+        elif inst_is_installed; then
             inst_perform_install
             exit $?
         else

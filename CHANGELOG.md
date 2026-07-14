@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Commands: install, version-check, self-update, self-uninstall, about, help, version.
 - Centralized `out_*` output SSOT with quiet / JSON / debug modes.
 - Online install integrity via **automatic** companion `selfmanaged.sha256` (primary) and optional secondary `CHECKSUM` pin.
-- Project requirements under `docs/requirements/` for automatic-checksum (transparent link/value/result), CLI, output, self-management, modular design, idempotency, and interactive vs non-interactive behavior.
+- Project requirements under `docs/requirements/` for automatic-checksum (transparent link/value/result), CLI interface, **CLI zero-arguments (Type O)**, output, self-management, modular design, idempotency, and interactive vs non-interactive behavior.
 - Portable template `template-automatic-checksum.md` for automatic companion-digest + transparency pattern.
 - Root `.gitignore` (docs requirements tracked; agent harness docs and build/temp artifacts ignored).
 - Product root [`LICENSE.md`](./LICENSE.md) (MIT) with author-email SSOT on the Copyright line.
@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Empty argv (**Type O** install-ensure): when already installed (local or global), one-liner / zero-arg reports **already installed** success instead of dumping **help**; `--force` only for deliberate reinstall. Product law: `requirement-shell-cli-zero-arguments`. Tests cover Case A failure, Case B local, and Case C global empty-argv paths.
 - Requirements Implementation Notes aligned to product **VERSION `1.0.0`** (removed stale `1.0.0-dev` SSOT text in CLI interface + self-management REQs).
 - `version` command routes through `app_version` (single path; JSON `app` + `version` fields preserved).
 - `path_add_*` / uninstall PATH cleanup use **`USER_BIN`** (not hardcoded `~/.local/bin` only).

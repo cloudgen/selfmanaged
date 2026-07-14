@@ -46,6 +46,35 @@ run_test_install_lifecycle() {
     assert_eq "re-install --json (idempotent) exit 0" 0 "$_ec"
     assert_contains "re-install reports already installed" "$_out" "already installed"
 
+    # --- zero-arg when already installed (local) = ensure success, not help (Type O Case B) ---
+    _out=$(
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        sh "${SCRIPT}" </dev/null 2>"${_errf}"
+    )
+    _ec=$?
+    _err=$(cat "${_errf}" 2>/dev/null || true)
+    assert_eq "zero-arg when installed (local) exit 0" 0 "$_ec"
+    assert_contains "zero-arg when installed (local) says already installed" "$_out" "already installed"
+    assert_not_contains "zero-arg when installed (local) must not dump help" "$_out" "Global Options"
+
+    # --- zero-arg when already installed (global path present) = Case C, not help ---
+    # Detect prefers executable GLOBAL_BIN path even for non-root (inst_get_version).
+    _global_bin="${CI_HOME}/global-bin"
+    mkdir -p "${_global_bin}"
+    cp "${SCRIPT}" "${_global_bin}/selfmanaged"
+    chmod +x "${_global_bin}/selfmanaged"
+    _out=$(
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${_global_bin}" \
+        SCRIPT_URL="${CI_SCRIPT_URL}" \
+        sh "${SCRIPT}" </dev/null 2>"${_errf}"
+    )
+    _ec=$?
+    assert_eq "zero-arg when installed (global) exit 0" 0 "$_ec"
+    assert_contains "zero-arg when installed (global) says already installed" "$_out" "already installed"
+    assert_not_contains "zero-arg when installed (global) must not dump help" "$_out" "Global Options"
+    # Leave local install in place for remaining lifecycle tests; drop isolated global stub
+    rm -f "${_global_bin}/selfmanaged"
+
     # --- about shows installed ---
     _out=$(
         HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \

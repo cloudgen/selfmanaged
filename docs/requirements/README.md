@@ -2,7 +2,7 @@
 
 Authoritative product and engineering requirements for this project live here.
 
-**Current state (2026-07-13 — selfmanaged specialization):** **Seven** live `requirement-shell-*.md` files (automatic-checksum, CLI interface, idempotency, interactive vs noninteractive, modular design, output, self-management). All **Active v1.0.0**. Registry: `index.md` (must stay in sync). This is **product law for selfmanaged**, not blank genesis. Do **not** invent additional requirement paths — verify on disk and register new files in `index.md` in the same change.
+**Current state (2026-07-14 — selfmanaged specialization):** **Eight** live `requirement-shell-*.md` files (automatic-checksum, CLI interface, CLI zero-arguments, idempotency, interactive vs noninteractive, modular design, output, self-management). Status **Active**; versions per file header (most v1.0.0; `requirement-shell-cli-zero-arguments` **v1.1.0** Type O). Registry: `index.md` (must stay in sync). This set is **sufficient product law** for the current Type 0 self-install/self-maintenance surface (no Type 1/2); online-install behavior is covered by composition (zero-arguments + CLI + checksum + self-management + interactive + idempotency), not a ninth umbrella file. Do **not** invent additional requirement paths without a real ownership gap — verify on disk and register new files in `index.md` in the same change.
 
 ## Purpose
 
