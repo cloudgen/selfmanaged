@@ -1,22 +1,23 @@
 # selfmanaged - Shell script bootstrap for self Installation & Maintenance
 
-![Version](https://img.shields.io/badge/Version-1.1.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.2.0-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 [![CIAO](https://img.shields.io/badge/Philosophy-CIAO%20v2.10.*-purple.svg)](https://github.com/cloudgen/ciao)
 [![Stars](https://img.shields.io/github/stars/cloudgen/selfmanaged?style=flat-square)](https://github.com/cloudgen/selfmanaged)
 
-POSIX `/bin/sh` **Type 0** CLI for **self-installation and self-maintenance**: install, version-check, self-update, self-uninstall, and about/diagnostics. Ship unit is the single-file script `./selfmanaged` (**CIAO v2.10.*** / CIAO-Lite defensive design).
+POSIX `/bin/sh` **Type 0** CLI for **self-installation and self-maintenance**: install, version-check, self-update, self-uninstall, and about/diagnostics. Bootstrap product (no domain verbs) — ship unit is the single-file script `./selfmanaged` (**CIAO v2.10.*** / CIAO-Lite defensive design).
 
-Runtime version SSOT: `VERSION="1.1.0"` in `./selfmanaged`. Install channel SSOT: `SCRIPT_URL` composed from `REPO_USER` / `REPO_NAME` / `APP_NAME` (default `https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged`). Philosophy SSOT: **[CIAO](https://github.com/cloudgen/ciao) v2.10.*** (aligned on **v2.10.2**; Caution • Intentional • Anti-fragile • Over-engineered / Over-protect) with agent contract [CIAO-Lite](https://github.com/cloudgen/ciao-lite).
+Runtime version SSOT: `VERSION="1.2.0"` in `./selfmanaged`. Install channel SSOT: `SCRIPT_URL` composed from `REPO_USER` / `REPO_NAME` / `APP_NAME` (default `https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged`). Philosophy SSOT: **[CIAO](https://github.com/cloudgen/ciao) v2.10.*** (aligned on **v2.10.2**; Caution • Intentional • Anti-fragile • Over-engineered / Over-protect) with agent contract [CIAO-Lite](https://github.com/cloudgen/ciao-lite).
 
 ## Features
 
-- Defensive design under **CIAO v2.10.*** (upgrade from earlier 2.9.x line) and CIAO-Lite — Protection Zones, centralized `out_*`, fail-closed install integrity
+- Defensive design under **CIAO v2.10.*** and CIAO-Lite — Protection Zones, centralized `out_*`, fail-closed install integrity
 - Single-file script for direct execution and online install (`curl | sh` / `wget`)
 - User vs global install paths (`~/.local/bin` / `/usr/local/bin`)
 - **Type O empty argv = install-ensure** (not help): not installed → install (TTY confirm when interactive; automatic under pipe / quiet / json); already installed (local or global) → success no-op without `--force`
 - Centralized output (`out_*`) with `--quiet`, `--json`, `--debug`
 - Self-update / version-check against `SCRIPT_URL`
+- **Per-user scratch storage:** resolves an isolated root (`/dev/shm` → `/tmp` → cache fallback), exports `TMPDIR` for install staging, and reports paths on `about` (human + JSON)
 - **Automatic checksum (SHA-256):** default install/self-update fetches `${SCRIPT_URL}.sha256` itself (no env pin); human mode is designed to show companion **link**, expected **value**, and **result**; mismatch aborts; missing sidecar warns and continues
 - **Optional strict pin:** `CHECKSUM` env for out-of-band / CI freeze only (secondary—not required for normal install)
 
@@ -111,8 +112,12 @@ selfmanaged self-uninstall
 | `REPO_NAME` | GitHub repo name (default `selfmanaged`); used to compose default `SCRIPT_URL` |
 | `SCRIPT_URL` | Install-script URL (default `https://raw.githubusercontent.com/${REPO_USER}/${REPO_NAME}/main/${APP_NAME}`; override for a full custom channel) |
 | `APP_NAME` | Override app name (default `selfmanaged`; also the raw path segment in the default channel URL) |
+| `STORAGE_DIR` | Optional **tier-3** cache fallback root when `/dev/shm` and `/tmp` are not usable (default `${XDG_CACHE_HOME}/${APP_NAME}-${USERNAME}`). Does not override a working volatile tier. Shown as `storage_dir` on `about`. |
+| `XDG_CACHE_HOME` | Used when composing the default `STORAGE_DIR` (default `${HOME}/.cache`) |
 
 `CHECKSUM` is an optional **install-path runtime** pin for CI/freeze (not shown in `help` / `about`). Empty default uses automatic `${SCRIPT_URL}.sha256`. See Advanced example below if you need an out-of-band pin.
+
+Effective scratch root for the run is chosen by `util_resolve_storage` (priority: `/dev/shm/${APP_NAME}-${USERNAME}` → `/tmp/…` → `STORAGE_DIR`), created fail-closed, exported as `EFFECTIVE_STORAGE_DIR` and as `TMPDIR` so install staging stays under the isolated path. Inspect with `selfmanaged about` or `selfmanaged about --json` (`effective_storage`, `storage_dir`).
 
 ## Examples
 
@@ -132,6 +137,13 @@ JSON version for automation:
 
 ```sh
 selfmanaged version --json
+```
+
+JSON about (includes install status and storage fields):
+
+```sh
+selfmanaged about --json
+# fields include: effective_storage, storage_dir (no CHECKSUM)
 ```
 
 JSON / non-interactive uninstall (must pass `--force`; confirm is never auto-yes):
@@ -182,8 +194,8 @@ selfmanaged.sha256    # bare SHA-256 hex of that file (companion digest)
 - Keep changes **surgical**; do not rewrite the whole script for small fixes.
 - Respect **CIAO v2.10.*** Protection Zones and intentional defensive checks — do not “simplify” them away.
 - After editing `./selfmanaged`, regenerate `selfmanaged.sha256` (see Examples).
-- Align user-facing docs with Config SSOTs (`VERSION`, `SCRIPT_URL`, checksum behavior).
-- Product rules live under `docs/requirements/` when present; do not invent requirement paths.
+- Align user-facing docs with Config SSOTs (`VERSION`, `SCRIPT_URL`, checksum, storage behavior).
+- Product rules live under `docs/requirements/` when present (nine Active `requirement-shell-*.md` including **cli-storage**); do not invent requirement paths.
 - Run the CI suite before opening a PR: `./tests/run.sh` (details in [`tests/README.md`](./tests/README.md)). GitHub Actions runs the same entrypoint on push/PR.
 
 ## License
@@ -194,4 +206,4 @@ Security reporting: see [`SECURITY.md`](./SECURITY.md). Maintainer contact email
 
 ## Last Update
 
-2026-07-14 — **1.1.0**: runtime `VERSION="1.1.0"` aligned with README badge / CHANGELOG / SECURITY; philosophy upgraded to **CIAO v2.10.*** (v2.10.2); companion `selfmanaged.sha256` bare hex; CI tests track live product version; Type O empty argv remains install-ensure (not help when already installed); automatic `${SCRIPT_URL}.sha256` is the primary integrity path.
+2026-07-16 — **1.2.0**: target + runtime `VERSION="1.2.0"`; Features / Environment / Examples document per-user scratch storage and about JSON fields; CHANGELOG + SECURITY supported versions; nine shell REQs including storage; companion `selfmanaged.sha256` regenerated.

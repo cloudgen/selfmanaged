@@ -70,13 +70,56 @@ run_test_cli() {
     assert_contains "help --json type success" "$_out" '"type":"success"'
     assert_contains "help --json command help" "$_out" '"command":"help"'
 
-    # --- about (json): no CHECKSUM field ---
+    # --- about (json): no CHECKSUM field; storage resolve fields ---
     _out=$(sh "${SCRIPT}" --json about 2>/dev/null)
     _ec=$?
     assert_eq "about --json exit 0" 0 "$_ec"
     assert_contains "about --json type" "$_out" '"type":"about"'
     assert_contains "about --json app" "$_out" '"app":"selfmanaged"'
     assert_not_contains "about --json must not include CHECKSUM" "$_out" "CHECKSUM"
+    assert_contains "about --json effective_storage" "$_out" '"effective_storage"'
+    assert_contains "about --json storage_dir" "$_out" '"storage_dir"'
+    assert_contains "about --json storage includes app name" "$_out" "${APP_NAME:-selfmanaged}"
+
+    # --- storage resolve isolation (EFFECTIVE_STORAGE_DIR via util_resolve_storage) ---
+    ci_isolated_env 2>/dev/null || true
+    if [ -n "${CI_HOME:-}" ]; then
+        _out=$(HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN:-${CI_HOME}/.local/bin}" \
+            sh "${SCRIPT}" --json about 2>/dev/null)
+        assert_contains "isolated about effective_storage has app" "$_out" "${APP_NAME:-selfmanaged}"
+        case "$_out" in
+            *'"effective_storage":"'*"${APP_NAME:-selfmanaged}"*) t_pass "effective_storage path contains ${APP_NAME:-selfmanaged}" ;;
+            *) t_fail "effective_storage missing app isolation in: $_out" ;;
+        esac
+        assert_contains "storage_dir field present under isolation" "$_out" '"storage_dir"'
+        _custom="${CI_HOME}/custom-storage-root"
+        _out=$(HOME="${CI_HOME}" STORAGE_DIR="${_custom}" \
+            sh "${SCRIPT}" --json about 2>/dev/null)
+        # STORAGE_DIR env appears on storage_dir config field (tier-3 / override field)
+        assert_contains "storage_dir honors STORAGE_DIR env" "$_out" "custom-storage-root"
+        _eff=$(printf '%s' "$_out" | sed -n 's/.*"effective_storage":"\([^"]*\)".*/\1/p' | head -n1)
+        if [ -n "$_eff" ] && [ -d "$_eff" ]; then
+            t_pass "effective_storage directory exists after resolve"
+        else
+            t_fail "effective_storage missing or not a directory: '${_eff:-empty}'"
+        fi
+        _who=$(id -un 2>/dev/null || echo "unknown")
+        case "$_out" in
+            *'"effective_storage":"'*"${_who}"*|*'"effective_storage":"'*"unknown"*) \
+                t_pass "effective_storage includes user segment" ;;
+            *) t_fail "effective_storage missing user segment for '${_who}': $_out" ;;
+        esac
+        ci_cleanup_env 2>/dev/null || true
+    else
+        # Fallback without full CI isolation helpers
+        _out=$(sh "${SCRIPT}" --json about 2>/dev/null)
+        _eff=$(printf '%s' "$_out" | sed -n 's/.*"effective_storage":"\([^"]*\)".*/\1/p' | head -n1)
+        if [ -n "$_eff" ] && [ -d "$_eff" ]; then
+            t_pass "effective_storage directory exists after resolve"
+        else
+            t_fail "effective_storage missing or not a directory: '${_eff:-empty}'"
+        fi
+    fi
 
     # --- unknown command ---
     _err=$(sh "${SCRIPT}" no-such-command 2>&1 >/dev/null)

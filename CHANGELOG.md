@@ -5,6 +5,28 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-07-16
+
+### Changed
+
+- Product version SSOT bumped to **`1.2.0`**:
+  - Runtime: `VERSION="1.2.0"` in `./selfmanaged` (and matching defaults in `app_about` / `app_version`).
+  - Docs: README Version badge + runtime SSOT prose + Features / Environment / Examples for storage + Last Update; [`SECURITY.md`](./SECURITY.md) supported versions (`1.2.0` current) and isolation/trust notes; [`AGENTS.md`](./AGENTS.md) + `docs/README.md` nine-REQ inventory; [`tests/README.md`](./tests/README.md) about storage coverage.
+  - Requirements Implementation Notes: CLI interface + self-management document live product version `1.2.0`.
+- Companion digest **`selfmanaged.sha256`** regenerated (bare 64-char hex of `./selfmanaged`).
+
+### Added
+
+- **CLI storage resolve** as product law and ship-unit wire:
+  - `requirement-shell-cli-storage.md` (Active) + registry row (nine shell REQs total).
+  - `util_resolve_storage` creates chosen tier root fail-closed; `app_main` exports `EFFECTIVE_STORAGE_DIR` + `TMPDIR`; `about` human/JSON expose `effective_storage` / `storage_dir`.
+  - Tests: about storage fields, isolation under app name + user, directory exists after resolve.
+- Origin-A lock-in from reviews (APP_NAME hard-assign, footer cites live REQs only, `out_json` `@key` raw nested support).
+
+### Fixed
+
+- Storage resolver previously dead / unused from main (SM-STOR-01 class) — wired and covered by suite.
+
 ## [1.1.0] - 2026-07-14
 
 ### Changed

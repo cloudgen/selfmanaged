@@ -149,6 +149,8 @@ Align with SSOT-of-stdout and SSOT-of-stderr terms:
 
 #### JSON object shape (this project)
 
+`out_json` optional **raw nested JSON**: key prefixed with `@` (e.g. `@items`) inserts the value unquoted as JSON array/object. Default keys remain string-escaped.
+
 `out_json` emits a single-line object:
 
 - Required: `"type":"<type>"`  
