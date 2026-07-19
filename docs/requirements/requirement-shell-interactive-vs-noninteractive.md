@@ -163,8 +163,8 @@ This dual policy is intentional: **pipe install proceeds**; **destructive uninst
 - **CIAO Principle 1 – Caution** (https://github.com/cloudgen/ciao): Never hang automation; destructive ops fail closed without force.  
 - **CIAO Principle 2 – Intentional** (https://github.com/cloudgen/ciao): Explicit matrices for install vs uninstall vs flags.  
 - **CIAO Principle 3 – Anti-fragile** (https://github.com/cloudgen/ciao): Works under `curl | sh`, CI, and human TTY.  
-- **CIAO Principle 14 – Interactive vs non-interactive awareness** (https://github.com/cloudgen/ciao): First-class mode policy.  
-- **CIAO Principle 18 – Over-protect** (https://github.com/cloudgen/ciao): Protected `prompt_*` helpers; no raw read regressions.
+- **CIAO Principle 16 – Interactive vs Non-Interactive** (https://github.com/cloudgen/ciao): First-class mode policy.  
+- **CIAO Principle 4 (O) / Principle 20 – Over-protect / Protect Against AI & Human Modification** (https://github.com/cloudgen/ciao): Protected `prompt_*` helpers; no raw read regressions.
 
 ---
 
@@ -225,6 +225,6 @@ Mode-related work for selfmanaged is **not done** if any of the following fail:
 
 ---
 
-**Last Updated**: 2026-07-12  
+**Last Updated**: 2026-07-19  
 **Owner**: selfmanaged project maintainers  
-**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 14, 18 (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).
+**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

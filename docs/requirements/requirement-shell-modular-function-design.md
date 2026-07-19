@@ -88,7 +88,7 @@ Product-source law is only the live registry under `docs/requirements/`. Local w
 # - Caution (Principle 1): ...
 # - Intentional (Principle 2): ...
 # - Anti-fragile (Principle 3): ...
-# - Over-protect (Principle 18): ...
+# - Over-protect (Principle 4 O + Principle 20): ...
 #
 # !!! DO NOT MODIFY OR SIMPLIFY THIS FUNCTION !!!
 # Designed to be reusable in other CIAO-Lite projects.
@@ -186,10 +186,10 @@ When adding a function to `./selfmanaged`:
 - **CIAO Principle 1 – Caution** (https://github.com/cloudgen/ciao): Small, prefixed units with safe defaults reduce accidental cross-cutting edits.  
 - **CIAO Principle 2 – Intentional** (https://github.com/cloudgen/ciao): Prefixes encode ownership; GENERAL PURPOSE encodes why.  
 - **CIAO Principle 3 – Anti-fragile** (https://github.com/cloudgen/ciao): Focused functions can be reviewed and reused; single file survives minimal environments.  
-- **CIAO Principle 5 – Single point of entry** (https://github.com/cloudgen/ciao): `app_main` is the dispatcher SSOT.  
-- **CIAO Principle 6 – General purpose requirement** (https://github.com/cloudgen/ciao): Public helpers document GENERAL PURPOSE.  
-- **CIAO Principle 7 – Reusable function protection** (https://github.com/cloudgen/ciao): DO NOT MODIFY on reusable helpers.  
-- **CIAO Principle 18 – Over-protect** (https://github.com/cloudgen/ciao): Protection Zones and prefix table defend against AI “cleanup” regressions.
+- **CIAO Principle 6 – Single Point of Entry** (https://github.com/cloudgen/ciao): `app_main` is the dispatcher SSOT.  
+- **CIAO Principle 7 – General Purpose Requirement** (https://github.com/cloudgen/ciao): Public helpers document GENERAL PURPOSE.  
+- **CIAO Principle 8 – Reusable Function Protection** (https://github.com/cloudgen/ciao): DO NOT MODIFY on reusable helpers.  
+- **CIAO Principle 4 (O) / Principle 20 – Over-protect / Protect Against AI & Human Modification** (https://github.com/cloudgen/ciao): Protection Zones and prefix table defend against AI “cleanup” regressions.
 
 ---
 
@@ -253,6 +253,6 @@ A modular-structure change for selfmanaged is **not done** if any of the followi
 
 ---
 
-**Last Updated**: 2026-07-12  
+**Last Updated**: 2026-07-19  
 **Owner**: selfmanaged project maintainers  
-**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 6, 7, 18 (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).
+**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 6, 7, 8, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

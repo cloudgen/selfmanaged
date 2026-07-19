@@ -1,13 +1,13 @@
 # selfmanaged - Shell script bootstrap for self Installation & Maintenance
 
-![Version](https://img.shields.io/badge/Version-1.2.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.2.1-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 [![CIAO](https://img.shields.io/badge/Philosophy-CIAO%20v2.10.*-purple.svg)](https://github.com/cloudgen/ciao)
 [![Stars](https://img.shields.io/github/stars/cloudgen/selfmanaged?style=flat-square)](https://github.com/cloudgen/selfmanaged)
 
 POSIX `/bin/sh` **Type 0** CLI for **self-installation and self-maintenance**: install, version-check, self-update, self-uninstall, and about/diagnostics. Bootstrap product (no domain verbs) — ship unit is the single-file script `./selfmanaged` (**CIAO v2.10.*** / CIAO-Lite defensive design).
 
-Runtime version SSOT: `VERSION="1.2.0"` in `./selfmanaged`. Install channel SSOT: `SCRIPT_URL` composed from `REPO_USER` / `REPO_NAME` / `APP_NAME` (default `https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged`). Philosophy SSOT: **[CIAO](https://github.com/cloudgen/ciao) v2.10.*** (aligned on **v2.10.2**; Caution • Intentional • Anti-fragile • Over-engineered / Over-protect) with agent contract [CIAO-Lite](https://github.com/cloudgen/ciao-lite).
+Runtime version SSOT: `VERSION="1.2.1"` in `./selfmanaged`. Install channel SSOT: `SCRIPT_URL` composed from `REPO_USER` / `REPO_NAME` / `APP_NAME` (default `https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged`). Philosophy SSOT: **[CIAO](https://github.com/cloudgen/ciao) v2.10.*** (aligned on **v2.10.2**; Caution • Intentional • Anti-fragile • Over-engineered / Over-protect) with agent contract [CIAO-Lite](https://github.com/cloudgen/ciao-lite).
 
 ## Features
 
@@ -206,4 +206,4 @@ Security reporting: see [`SECURITY.md`](./SECURITY.md). Maintainer contact email
 
 ## Last Update
 
-2026-07-16 — **1.2.0**: target + runtime `VERSION="1.2.0"`; Features / Environment / Examples document per-user scratch storage and about JSON fields; CHANGELOG + SECURITY supported versions; nine shell REQs including storage; companion `selfmanaged.sha256` regenerated.
+2026-07-19 — **1.2.1**: target + runtime `VERSION="1.2.1"`; class requirement registered (software-development); shell REQ CIAO/hygiene + product review report; companion `selfmanaged.sha256` regenerated.

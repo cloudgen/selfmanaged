@@ -4,7 +4,7 @@
 **Class:** Bootstrap project — no Active domain requirements expected.  
 **Always load first:** `reviews/lessons.md`
 
-**Last plan update:** 2026-07-16 (plan + product re-check; SM-PLAN-01 / SM-DOC-01 open nits)
+**Last plan update:** 2026-07-19 (product re-check; SM-PLAN-01 / SM-OPS-SSH-01 open)
 
 ---
 
@@ -12,7 +12,8 @@
 
 | # | Check | Notes |
 |---|--------|--------|
-| P1 | Read `docs/requirements/index.md` (live law only) | 9 shell REQs incl. **storage**; no domain SSOT |
+| P1 | Read `docs/requirements/index.md` (live law only) | **1 class** + **9 shell** REQs incl. **storage**; no domain SSOT |
+| P0 | Pre-git SSH profile report if remote git | Active profile + git-capable candidates vs `REPO_USER` |
 | P2 | Confirm ship unit `./selfmanaged` + companion `./selfmanaged.sha256` | Digest match via tests |
 | P3 | Load `reviews/lessons.md` and re-check every open L-* | Mandatory |
 | P4 | Run `./tests/run.sh` for baseline | Record PASS/FAIL in report |

@@ -2,7 +2,7 @@
 
 Maps **baseline coverage** and **finding lock-in (TP-*)** to `tests/`.  
 **Suite entry:** `./tests/run.sh`  
-**Last update:** 2026-07-16 (plan + product re-check)
+**Last update:** 2026-07-19 (product re-check; baseline re-run PASS=102)
 
 Status: **have** = automated today · **TODO** = needed · **n/a** = not applicable / product choice
 
@@ -26,7 +26,8 @@ Status: **have** = automated today · **TODO** = needed · **n/a** = not applica
 | Install / re-install idempotent | have | test_install_lifecycle |
 | version-check / self-update / checksum / downgrade | have | lifecycle |
 
-**Baseline result (2026-07-16 origin fix):** PASS=102 FAIL=0 SKIP=0
+**Baseline result (2026-07-16 origin fix):** PASS=102 FAIL=0 SKIP=0  
+**Baseline re-run (2026-07-19 product review):** PASS=102 FAIL=0 SKIP=0
 
 ---
 

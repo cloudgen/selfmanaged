@@ -108,9 +108,9 @@ Force **MUST NOT** be used as a silent way to skip integrity verification.
 - **CIAO Principle 1 – Caution** (https://github.com/cloudgen/ciao): Assume re-runs, CI, scripts, and `curl | sh` retries; never fail “already exists” as if it were corruption.  
 - **CIAO Principle 2 – Intentional** (https://github.com/cloudgen/ciao): Clear detect vs act vs force override; no accidental reinstall.  
 - **CIAO Principle 3 – Anti-fragile** (https://github.com/cloudgen/ciao): Converge from partial installs; tolerate second run after success.  
-- **CIAO Principle 9 – Safe temporary file handling** (https://github.com/cloudgen/ciao): Temps cleaned so re-entry does not pile up or race on fixed names.  
-- **CIAO Principle 10 – Backup & restore** (https://github.com/cloudgen/ciao): When future ensure steps edit existing configs, backup-before-write remains required (PATH edits today use append/check patterns).  
-- **CIAO Principle 18 – Over-protect** (https://github.com/cloudgen/ciao): Existence checks and no-op success paths are Protection Zone material — not “simplify away.”
+- **CIAO Principle 11 – Safe Temporary File Handling** (https://github.com/cloudgen/ciao): Temps cleaned so re-entry does not pile up or race on fixed names.  
+- **CIAO Principle 12 – Right Backup & Restore Strategy** (https://github.com/cloudgen/ciao): When future ensure steps edit existing configs, backup-before-write remains required (PATH edits today use append/check patterns).  
+- **CIAO Principle 4 (O) / Principle 20 – Over-protect / Protect Against AI & Human Modification** (https://github.com/cloudgen/ciao): Existence checks and no-op success paths are Protection Zone material — not “simplify away.”
 
 ---
 
@@ -171,6 +171,6 @@ A state-changing shell change for selfmanaged is **not done** if any of the foll
 
 ---
 
-**Last Updated**: 2026-07-12  
+**Last Updated**: 2026-07-19  
 **Owner**: selfmanaged project maintainers  
-**Alignment**: Registry `docs/requirements/index.md`; related `requirement-shell-cli-interface.md`; CIAO Principles 1, 2, 3, 9, 10, 18 (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).
+**Alignment**: Registry `docs/requirements/index.md`; related `requirement-shell-cli-interface.md`; CIAO Principles 1, 2, 3, 11, 12, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

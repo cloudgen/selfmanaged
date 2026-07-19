@@ -5,6 +5,25 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.1] - 2026-07-19
+
+### Changed
+
+- Product version SSOT bumped to **`1.2.1`**:
+  - Runtime: `VERSION="1.2.1"` in `./selfmanaged`.
+  - Docs: README Version badge + runtime SSOT prose + Last Update; [`SECURITY.md`](./SECURITY.md) supported versions (`1.2.1` current).
+  - Requirements: class law `requirement-class-software-dev.md` registered; shell REQs CIAO v2.10.2 principle renumber; DoD on storage + automatic-checksum; registry inventory **1 class + 9 shell**.
+- Companion digest **`selfmanaged.sha256`** regenerated (bare 64-char hex of `./selfmanaged`).
+
+### Added
+
+- Software-development **class requirement** (`requirement-class-software-dev.md`) + registry Area `class`.
+- Product review report `reviews/reports/2026-07-19-selfmanaged-product-review.md` (baseline PASS=102).
+
+### Fixed
+
+- Requirements hygiene from review: class gate, CIAO principle numbering, definition-of-done gaps, git-identity / SSH profile pre-git reporting (harness).
+
 ## [1.2.0] - 2026-07-16
 
 ### Changed

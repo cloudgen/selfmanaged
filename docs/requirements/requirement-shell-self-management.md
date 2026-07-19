@@ -112,7 +112,7 @@ Root may write global install path; non-root uses user path. Do not assume root 
 | **Uninstall steps** | `inst_self_uninstall_determine_bin` → `inst_self_uninstall_confirm_and_remove` → `inst_self_uninstall_cleanup_path` |
 | **PATH ensure** | `path_add_shell` / bash / zsh / fish helpers on user install |
 | **Privilege** | Type 0 only for self-management surface; no dedicated system user |
-| **Version SSOT** | `VERSION` default `1.2.0` in script config block (`VERSION="1.2.0"`) |
+| **Version SSOT** | `VERSION` default `1.2.1` in script config block (`VERSION="1.2.1"`) |
 
 #### Normative acceptance behaviors (this project)
 
@@ -139,10 +139,10 @@ Root may write global install path; non-root uses user path. Do not assume root 
 - **CIAO Principle 1 – Caution** (https://github.com/cloudgen/ciao): Block silent downgrade and unsafe uninstall; verify downloads.  
 - **CIAO Principle 2 – Intentional** (https://github.com/cloudgen/ciao): Separate version-check, self-update, self-uninstall, and about.  
 - **CIAO Principle 3 – Anti-fragile** (https://github.com/cloudgen/ciao): Per-user and global installs; temp + atomic replace survive partial failure.  
-- **CIAO Principle 4/12 – Output & traceability** (https://github.com/cloudgen/ciao): Central `out_*`; JSON/human modes.  
-- **CIAO Principle 8 – Least privilege** (https://github.com/cloudgen/ciao): Type 0 invoker default for CLI lifecycle.  
-- **CIAO Principle 9 – Safe temp files** (https://github.com/cloudgen/ciao): `mktemp`, cleanup on error.  
-- **CIAO Principle 18 – Over-protect** (https://github.com/cloudgen/ciao): Digest, atomicity, PATH empty-dir check are sacred.
+- **CIAO Principle 5 – Single Source of Output** and **Principle 14 – Security & Traceability** (https://github.com/cloudgen/ciao): Central `out_*`; JSON/human modes.  
+- **CIAO Principle 10 – Least-Privilege User** (https://github.com/cloudgen/ciao): Type 0 invoker default for CLI lifecycle.  
+- **CIAO Principle 11 – Safe Temporary File Handling** (https://github.com/cloudgen/ciao): `mktemp`, cleanup on error.  
+- **CIAO Principle 4 (O) / Principle 20 – Over-protect / Protect Against AI & Human Modification** (https://github.com/cloudgen/ciao): Digest, atomicity, PATH empty-dir check are sacred.
 
 ---
 
@@ -206,6 +206,6 @@ Work claiming self-management support for selfmanaged is **not done** if any of 
 
 ---
 
-**Last Updated**: 2026-07-12  
+**Last Updated**: 2026-07-19  
 **Owner**: selfmanaged project maintainers  
-**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 8, 9, 18 (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).
+**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 10, 11, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

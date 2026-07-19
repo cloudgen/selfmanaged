@@ -142,7 +142,7 @@ When this requirement is **Active** for the product:
 | Show companion **link** in human mode | **Implemented** (2026-07-14) — `Companion link: ${SCRIPT_URL}.sha256` |
 | Show expected **value** and **result** (pass/fail with digests) | **Implemented** (2026-07-14) — Expected/Actual SHA-256 lines + `Automatic checksum result: PASS` (or mismatch abort with digests) |
 | `downloaded_checksum_ok` on automatic match | **Implemented** (2026-07-14) — `INST_AUTO_CHECKSUM_OK=1` on companion match; atomic install can report “cryptographically verified” |
-| README leads with automatic mode | **Mostly present**; must not reintroduce env-first pin as primary (agents: `skill-write-readme`) |
+| README leads with automatic mode | **Mostly present**; must not reintroduce env-first pin as primary (product root `README.md` integrity story) |
 | `help` / `about` omit `CHECKSUM` | **Implemented** in `app_help` (no Environment line); `app_about` never listed it |
 | Same-origin CHECKSUM example as “highest assurance” | **Must not** — document as advanced/out-of-band only |
 
@@ -151,8 +151,8 @@ When this requirement is **Active** for the product:
 - **CIAO Principle 1 – Caution:** Network bytes are untrusted; verify when a companion exists; fail closed on mismatch.  
 - **CIAO Principle 2 – Intentional:** Automatic vs optional pin are deliberate modes; transparency makes intent visible to operators.  
 - **CIAO Principle 3 – Anti-fragile:** Missing companion does not hard-break older channels; whitespace-tolerant digest parse.  
-- **CIAO Principle 4/12 – Output & traceability:** Link, value, and result are operator-visible audit trail via `out_*`.  
-- **CIAO Principle 18 – Over-protect:** Do not remove automatic companion verify or silent-ize integrity outcomes.
+- **CIAO Principle 5 – Single Source of Output** and **Principle 14 – Security & Traceability:** Link, value, and result are operator-visible audit trail via `out_*`.  
+- **CIAO Principle 4 (O) / Principle 20 – Over-protect / Protect Against AI & Human Modification:** Do not remove automatic companion verify or silent-ize integrity outcomes.
 
 ---
 
@@ -185,7 +185,22 @@ Violating this rule is a requirements failure and must be recorded (incident or 
 
 ---
 
-## 5. Related (versioned requirements surface only)
+## 5. Definition of done (automatic checksum)
+
+Integrity work for selfmanaged is **not done** if any of the following fail:
+
+1. When `CHECKSUM` env is unset, install download path attempts automatic companion fetch at `${SCRIPT_URL}.sha256`.  
+2. Companion mismatch aborts install (fail closed); no corrupt binary left as success.  
+3. Missing companion warns with companion URL and does not pretend “always verified.”  
+4. Human mode shows companion **link**, expected **value**, and verification **result** (or documented equivalent transparency).  
+5. `help` and `about` (human and JSON) **omit** `CHECKSUM` as an operator-facing field.  
+6. Product root `README.md` leads with automatic companion mode — not env-first pin as the primary story.  
+7. Self-update reuses the same integrity model as first-time install (no second ad hoc download path).  
+8. Implementation changes cite this requirement key `requirement-shell-automatic-checksum`.
+
+---
+
+## 6. Related (versioned requirements surface only)
 
 | Artifact | Role |
 |----------|------|
@@ -199,9 +214,16 @@ Violating this rule is a requirements failure and must be recorded (incident or 
 
 ---
 
-## 6. Revision history
+## 7. Revision history
 
 | Date | Change | Author / agent |
 |------|--------|----------------|
 | 2026-07-13 | Initial Active v1.0.0 — automatic companion digest + transparency (link/value/result); secondary CHECKSUM; README primary-path rules | Multi-agent council |
 | 2026-07-13 | `CHECKSUM` = install-path runtime variable only; **MUST NOT** display in `help` / `about` | Multi-agent council |
+| 2026-07-19 | CIAO v2.10.2 principle renumber; Definition of done; scrub harness skill name from compliance notes | Requirements review fix |
+
+---
+
+**Last Updated**: 2026-07-19  
+**Owner**: selfmanaged project maintainers  
+**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

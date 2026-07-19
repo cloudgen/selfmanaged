@@ -2,7 +2,7 @@
 
 Authoritative product and engineering requirements for this project live here.
 
-**Current state (2026-07-16 — selfmanaged bootstrap):** **Nine** Active `requirement-shell-*.md` files (automatic-checksum, CLI interface, **cli-storage**, CLI zero-arguments, idempotency, interactive vs noninteractive, modular design, output, self-management). Registry: `index.md` (must stay in sync). Bootstrap project — **no domain SSOT**. Type 0 self-install/self-maintenance + per-user scratch storage. Do **not** invent additional requirement paths without a real ownership gap — verify on disk and register new files in `index.md` in the same change.
+**Current state (2026-07-19 — selfmanaged bootstrap):** **One** Active class requirement (`requirement-class-software-dev`) plus **nine** Active `requirement-shell-*.md` files (automatic-checksum, CLI interface, **cli-storage**, CLI zero-arguments, idempotency, interactive vs noninteractive, modular design, output, self-management). Registry: `index.md` (must stay in sync). Bootstrap project — **no domain SSOT**. Type 0 self-install/self-maintenance + per-user scratch storage. Do **not** invent additional requirement paths without a real ownership gap — verify on disk and register new files in `index.md` in the same change.
 
 ## Purpose
 
@@ -22,20 +22,23 @@ Suggested areas (if using subdirs): `product/`, `platform/`, `security/`, `ops/`
 
 ## ID scheme
 
-- Format: `REQ-<AREA>-<NNN>` (example: `REQ-PLAT-001`).
-- IDs are stable. Prefer status/`supersedes` over renumbering.
-- Record every ID in `index.md` when created or status changes.
+- **Primary live convention:** `requirement-<topic>.md` or `requirement-<language>-<topic>.md` (e.g. `requirement-shell-cli-interface.md`, `requirement-class-software-dev.md`).
+- Optional council-style: `REQ-<AREA>-<NNN>` (example: `REQ-PLAT-001`) if using area subdirs.
+- IDs/keys are stable. Prefer status/`supersedes` over renumbering.
+- Record every key in `index.md` when created or status changes.
 
 ## Status values
 
+Live product law on this project uses the **file header Status** (and matching registry **Status** column):
+
 | Status | Meaning |
 |--------|---------|
-| `draft` | Proposed; not yet approved for implementation |
-| `approved` | Ready to implement |
-| `in-progress` | Implementation underway |
-| `done` | Delivered and reviewed against checklists |
-| `deprecated` | No longer active; keep file for history |
-| `superseded` | Replaced by another REQ-ID (link it) |
+| `Active` | Normative product law — implement and review against it |
+| `Draft` | Proposed; not yet approved as binding law |
+| `Deprecated` | No longer active; keep file for history |
+| `Superseded` | Replaced by another requirement key (link it) |
+
+Legacy/council synonyms sometimes seen in older docs (`approved`, `in-progress`, `done`) map to **Active** when the file is registered and binding. Prefer **Active** for this registry.
 
 ## Plan-mode rules (mandatory)
 
@@ -58,3 +61,4 @@ When planning non-trivial work:
 
 - Requirements changes and code/docs delivery use the project’s plan/implement/code-review/security checklist process.
 - Empty registry is valid for genesis; do not invent requirements to “fill” the index.
+- Software-development class requires Active `requirement-class-software-dev.md` in the registry.

@@ -181,9 +181,9 @@ Align with SSOT-of-stdout and SSOT-of-stderr terms:
 - **CIAO Principle 1 – Caution** (https://github.com/cloudgen/ciao): Prevent output pollution that breaks pipes, CI, and automation.  
 - **CIAO Principle 2 – Intentional** (https://github.com/cloudgen/ciao): Explicit split of human vs JSON and stdout vs stderr.  
 - **CIAO Principle 3 – Anti-fragile** (https://github.com/cloudgen/ciao): Works in TTY, `curl \| sh`, quiet, and JSON environments.  
-- **CIAO Principle 4 – Single source of output** (https://github.com/cloudgen/ciao): One `out_text` / `out_json` authority.  
-- **CIAO Principle 12 – Security & traceability** (https://github.com/cloudgen/ciao): Separate user-facing payload from diagnostics; support ERROR/WARN/INFO/DEBUG discipline.  
-- **CIAO Principle 18 – Over-protect** (https://github.com/cloudgen/ciao): JSON-forces-quiet and no-raw-print rules are sacred.
+- **CIAO Principle 5 – Single Source of Output** (https://github.com/cloudgen/ciao): One `out_text` / `out_json` authority.  
+- **CIAO Principle 14 – Security & Traceability** (https://github.com/cloudgen/ciao): Separate user-facing payload from diagnostics; support ERROR/WARN/INFO/DEBUG discipline.  
+- **CIAO Principle 4 (O) / Principle 20 – Over-protect / Protect Against AI & Human Modification** (https://github.com/cloudgen/ciao): JSON-forces-quiet and no-raw-print rules are sacred.
 
 ---
 
@@ -248,6 +248,6 @@ Output-related work for selfmanaged is **not done** if any of the following fail
 
 ---
 
-**Last Updated**: 2026-07-12 (printf exception classes §2.1.1)  
+**Last Updated**: 2026-07-19 (printf exception classes §2.1.1)  
 **Owner**: selfmanaged project maintainers  
-**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 4, 12, 18 (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).
+**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

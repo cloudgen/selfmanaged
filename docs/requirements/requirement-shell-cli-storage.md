@@ -90,7 +90,22 @@ First match that is available and writable:
 
 ---
 
-## 5. Related artifacts
+## 5. Definition of done (shell CLI storage)
+
+Storage resolve work for selfmanaged is **not done** if any of the following fail:
+
+1. Exactly one authoritative resolver (`util_resolve_storage`) returns the chosen path on stdout after `mkdir -p` of that root.  
+2. Resolve priority matches this requirement (writable `/dev/shm` → `/tmp` → `STORAGE_DIR` fallback).  
+3. Paths include `${APP_NAME}` and `${USERNAME}` isolation; no shared world-writable single dump for all users.  
+4. `app_main` sets `EFFECTIVE_STORAGE_DIR` / exports `TMPDIR` from the resolver once early.  
+5. `app_about` human + JSON expose effective storage fields and **omit** `CHECKSUM`.  
+6. User-visible storage failures use Output SSOT (`out_die` / structured error).  
+7. Tests cover about storage fields / isolation / override as designed (`tests/test_cli.sh`).  
+8. Implementation changes cite this requirement key `requirement-shell-cli-storage`.
+
+---
+
+## 6. Related artifacts
 
 | Artifact | Role |
 |----------|------|
@@ -103,6 +118,6 @@ First match that is available and writable:
 
 ---
 
-**Last Updated**: 2026-07-16  
+**Last Updated**: 2026-07-19  
 **Owner**: selfmanaged project maintainers  
-**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 4, 5, 11, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).
+**Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 4, 5, 11, 19, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

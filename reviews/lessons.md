@@ -2,10 +2,11 @@
 
 **Prior-report failure modes** to re-check on every product review.  
 **Mandatory load** before findings.  
-**Last update:** 2026-07-16 (plan + product re-check)
+**Last update:** 2026-07-19 (full product re-check)
 
 | L-ID | Failure mode | Re-check | Source | Open? |
 |------|--------------|----------|--------|-------|
+| L-OPS-SSH-01 | Active ssh-user-profile GitHub DENIED while another profile is git-capable; default ≠ repository-user | Pre-git report: active profile + git-capable list; activate matching REPO_USER | SM-OPS-SSH-01 | **Closed** (2026-07-19 activate cloudgen) |
 | L-STOR-01 | Storage resolver dead code; tiers 1–2 no mkdir; not called from main/about | Call sites of `util_resolve_storage`; mkdir all tiers; about JSON storage fields | SM-STOR-01 | **Closed** (2026-07-16 wire) |
 | L-STOR-02 | No storage product law | `requirement-shell-cli-storage.md` + index row | SM-STOR-02 | **Closed** (2026-07-16) |
 | L-BOOT-01 | Basename / `$0` APP_NAME gate blocks `curl\|sh` | End of ship unit always `app_main "$@"` | INC-20260712-001 | **Closed** (re-check still) |

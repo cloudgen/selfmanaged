@@ -43,8 +43,8 @@ APP_NAME="selfmanaged"
 : "${SHORT_DESCRIPTION:=${APP_DESC}}"
 : "${DESCRIPTION:=POSIX /bin/sh Type 0 CLI: install, version-check, self-update, self-uninstall, and about.}"
 # Product version SSOT (semver). Extractors use: grep '^VERSION="'
-VERSION="1.2.0"
-: "${VERSION:=1.2.0}"
+VERSION="1.2.1"
+: "${VERSION:=1.2.1}"
 
 # Runtime flags (safe defaults)
 : "${QUIET:=0}"
