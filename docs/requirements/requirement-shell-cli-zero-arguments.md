@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-cli-zero-arguments.md  
-**Status**: Active (Version 1.1.0)  
+**Status**: Active (Version 1.2.0)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -55,6 +55,18 @@ Empty argv means **install-ensure** for three detect cases:
 2. Explicit `selfmanaged help` remains the only full-usage path for help text.  
 3. Bootstrap **MUST** always call `app_main "$@"` so pipe one-liners reach this contract (no `${0##*/}` product-name gate).  
 4. Empty argv **MUST NOT** require the user to pass `install` or `install --force` merely because a previous ensure already succeeded.
+
+### 2.2.1 Specializee contract (bootstrap origin → specialized B)
+
+When this product is used as **bootstrap origin A** for a specialized product **B** (A→B only; never reverse-copy):
+
+| Rule | MUST | MUST NOT |
+|------|------|----------|
+| Empty argv on B | Keep **Type O install-ensure** (or document a product-type change with authorized REQ) | Hijack empty argv for domain full-setup / host mutation |
+| Domain setup verb | Use an explicit command (e.g. `run`, `setup`, domain verb catalog) | Treat bare `curl \| sh` / empty argv as host domain install |
+| Tests | Isolate `HOME`, `USER_BIN`, and **`GLOBAL_BIN`** so host `/usr/local/bin/${APP_NAME}` does not shadow lifecycle CI | Assume empty `HOME` alone hides a real global install |
+
+**Rationale:** Specializees that rebind empty argv to interactive host setup break the online-install contract and confuse install-ensure with domain ops. Host-mutating domain work belongs under explicit verbs with privilege gates (see CLI interface specializee contract).
 
 ### 2.3 Normative case matrix
 
@@ -224,6 +236,7 @@ This requirement is satisfied when all of the following hold:
 |------|--------|----------------|
 | 2026-07-14 | Initial Active v1.0.0: empty argv = install-ensure for not-installed / local / global; forbid help fallthrough | Grok (owner request) |
 | 2026-07-14 | v1.1.0: Classify product as Type O (online-install) under dual-type empty-argv template model | Grok |
+| 2026-08-11 | v1.2.0: Specializee contract — empty argv stays Type O; domain setup uses explicit verbs; test GLOBAL_BIN isolation | Grok (gitlab-nginx specialize reflection) |
 
 ---
 

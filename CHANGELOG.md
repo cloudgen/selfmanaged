@@ -5,6 +5,24 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.2] - 2026-08-11
+
+### Added
+
+- **Specializee contract** (bootstrap A → specialized B) in product law:
+  - Empty argv stays Type O install-ensure; domain setup uses explicit verbs (`requirement-shell-cli-zero-arguments` v1.2.0).
+  - Channel / identity / `out_*` / root host-mutation / help order / REQ retarget hygiene (`requirement-shell-cli-interface` v1.1.0).
+  - Domain prefix + temporary output-shim note (`requirement-shell-modular-function-design`); `@key` nested JSON specializee note (`requirement-shell-output-requirements`).
+- **Ship-unit injection anchors** in `./selfmanaged`: `DOMAIN_HELP_ROWS`, `DOMAIN_ABOUT_FIELDS`, `DOMAIN_DISPATCH_FLAGS`, `DOMAIN_DISPATCH_COMMANDS`, `DOMAIN_DISPATCH_ROUTES`.
+- **CI test isolation:** `ci_isolated_env` exports isolated `GLOBAL_BIN` so host `/usr/local/bin/selfmanaged` cannot shadow install lifecycle tests (port from gitlab-nginx specialize lesson).
+- Living **revision plan:** `reviews/revision-plan.md` (items 1–3 closed in 1.2.2; residual backlog).
+
+### Changed
+
+- Product version SSOT bumped to **`1.2.2`** (ship unit, README badge, SECURITY, companion digest).
+- Requirements Implementation Notes Version SSOT aligned to **1.2.2** (`requirement-class-software-dev`, `requirement-shell-self-management`); registry header date refreshed.
+- Reviews residual: report baseline `PASS=102`; `L-REQ-CIAO-URL-01` / SM-REV-05 lesson recorded.
+
 ## [1.2.1] - 2026-07-19
 
 ### Changed

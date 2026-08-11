@@ -84,7 +84,7 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 | **Architectures supported** | any arch with a POSIX sh and the external tools the script invokes (no arch-specific binary) |
 | **Git surface** | used for product publish (`github.com/cloudgen/selfmanaged`) |
 | **Ship unit / install** | yes — repo root `./selfmanaged` + companion `selfmanaged.sha256`; Type 0 online install (peer shell REQs) |
-| **Product version SSOT** | `VERSION="…"` hard-assign in `./selfmanaged` (currently `1.2.1`) |
+| **Product version SSOT** | `VERSION="…"` hard-assign in `./selfmanaged` (currently `1.2.2`) |
 
 **Residual ownership table:**
 

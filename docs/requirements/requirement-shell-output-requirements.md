@@ -151,6 +151,13 @@ Align with SSOT-of-stdout and SSOT-of-stderr terms:
 
 `out_json` optional **raw nested JSON**: key prefixed with `@` (e.g. `@items`) inserts the value unquoted as JSON array/object. Default keys remain string-escaped.
 
+**Specializee note:** domain arrays/objects **MUST** use `@key` raw insertion (caller builds valid JSON). Stringifying a JSON array into a normal string field is an anti-pattern for machine consumers.
+
+```sh
+# Example — domain list as JSON array (specializee), not a quoted string:
+# out_json "success" "" "count" "2" "@domains" '["a.example","b.example"]'
+```
+
 `out_json` emits a single-line object:
 
 - Required: `"type":"<type>"`  

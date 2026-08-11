@@ -4,7 +4,7 @@
 **Class:** Bootstrap project — no Active domain requirements expected.  
 **Always load first:** `reviews/lessons.md`
 
-**Last plan update:** 2026-07-19 (product re-check; SM-PLAN-01 / SM-OPS-SSH-01 open)
+**Last plan update:** 2026-08-11 (1.2.2 specializee contract + GLOBAL_BIN isolation; see `revision-plan.md`)
 
 ---
 
@@ -25,8 +25,8 @@
 
 | Surface | Path | Review focus |
 |---------|------|--------------|
-| CLI interface | `requirement-shell-cli-interface.md` | Commands, flags, dispatch, modes |
-| Zero-arg Type O | `requirement-shell-cli-zero-arguments.md` | Empty argv = install-ensure, not help |
+| CLI interface | `requirement-shell-cli-interface.md` | Commands, flags, dispatch; specializee §2.5.1 |
+| Zero-arg Type O | `requirement-shell-cli-zero-arguments.md` | Empty argv = install-ensure, not help; specializee §2.2.1 |
 | Self-management | `requirement-shell-self-management.md` | version-check, self-update, self-uninstall, about |
 | Output SSOT | `requirement-shell-output-requirements.md` | `out_*`; JSON errors on stderr |
 | Modular design | `requirement-shell-modular-function-design.md` | Prefixes; inventory honesty vs disk |
@@ -61,8 +61,9 @@
 | Suite entry | `tests/run.sh` |
 | CLI surface | `tests/test_cli.sh` |
 | Install lifecycle | `tests/test_install_lifecycle.sh` |
-| Helpers | `tests/helpers.sh` |
+| Helpers | `tests/helpers.sh` (**GLOBAL_BIN** isolate) |
 | TP registry | `reviews/test-plan.md` |
+| Revision plan | `reviews/revision-plan.md` |
 
 ---
 

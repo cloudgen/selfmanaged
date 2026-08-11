@@ -2,7 +2,7 @@
 
 Maps **baseline coverage** and **finding lock-in (TP-*)** to `tests/`.  
 **Suite entry:** `./tests/run.sh`  
-**Last update:** 2026-07-19 (product re-check; baseline re-run PASS=102)
+**Last update:** 2026-08-11 (1.2.2 GLOBAL_BIN isolation; specializee porting notes)
 
 Status: **have** = automated today · **TODO** = needed · **n/a** = not applicable / product choice
 
@@ -25,9 +25,11 @@ Status: **have** = automated today · **TODO** = needed · **n/a** = not applica
 | self-uninstall --json without --force | have | confirm_required |
 | Install / re-install idempotent | have | test_install_lifecycle |
 | version-check / self-update / checksum / downgrade | have | lifecycle |
+| GLOBAL_BIN isolate under multi-install hosts | **have** | `ci_isolated_env` (1.2.2) |
 
 **Baseline result (2026-07-16 origin fix):** PASS=102 FAIL=0 SKIP=0  
-**Baseline re-run (2026-07-19 product review):** PASS=102 FAIL=0 SKIP=0
+**Baseline re-run (2026-07-19 product review):** PASS=102 FAIL=0 SKIP=0  
+**Baseline re-run (2026-08-11 1.2.2):** PASS=102 FAIL=0 SKIP=0
 
 ---
 
@@ -47,6 +49,7 @@ Status: **have** = automated today · **TODO** = needed · **n/a** = not applica
 | TP-SETU-01 | L-SETU-01 | env -u HOME still works | **have** | test_cli |
 | TP-CITE-TERM-01 | L-CITE-TERM-01 | Bootstrap footer cites requirements | **have** | static fix |
 | TP-JSON-RAW-01 | L-JSON-RAW-01, SM-PLAN-01 | `out_json` `@key` raw nested | **TODO** (impl present) | Code has `@*` branch; no suite assertion yet — mark **have** only after test or reclassify n/a |
+| TP-ISO-GLOBAL-01 | SM-REV-01 / gitlab-nginx specialize | Isolated GLOBAL_BIN for lifecycle | **have** | helpers + lifecycle/cli env |
 
 ---
 

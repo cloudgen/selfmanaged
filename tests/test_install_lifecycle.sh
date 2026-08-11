@@ -27,7 +27,7 @@ run_test_install_lifecycle() {
 
     # --- install ---
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         sh "${SCRIPT}" --json install 2>"${_errf}"
     )
     _ec=$?
@@ -39,7 +39,7 @@ run_test_install_lifecycle() {
 
     # --- idempotent re-install (no --force) ---
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         sh "${SCRIPT}" --json install 2>"${_errf}"
     )
     _ec=$?
@@ -48,7 +48,7 @@ run_test_install_lifecycle() {
 
     # --- zero-arg when already installed (local) = ensure success, not help (Type O Case B) ---
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         sh "${SCRIPT}" </dev/null 2>"${_errf}"
     )
     _ec=$?
@@ -77,7 +77,7 @@ run_test_install_lifecycle() {
 
     # --- about shows installed ---
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         sh "${SCRIPT}" --json about 2>/dev/null
     )
     _ec=$?
@@ -86,7 +86,7 @@ run_test_install_lifecycle() {
 
     # --- version-check against local channel (strict JSON schema) ---
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         PATH="${CI_USER_BIN}:${PATH}" \
         sh "${_sm_bin}" --json version-check 2>"${_errf}"
     )
@@ -101,7 +101,7 @@ run_test_install_lifecycle() {
 
     # human version-check
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         PATH="${CI_USER_BIN}:${PATH}" \
         sh "${_sm_bin}" version-check 2>/dev/null
     )
@@ -112,7 +112,7 @@ run_test_install_lifecycle() {
 
     # --- self-update already-latest ---
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         PATH="${CI_USER_BIN}:${PATH}" \
         sh "${_sm_bin}" --json self-update 2>"${_errf}"
     )
@@ -125,7 +125,7 @@ run_test_install_lifecycle() {
     # --- human install transparency (companion link / expected / result) ---
     # Reinstall with --force so human messages are emitted on download path.
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         sh "${SCRIPT}" --force install 2>"${_errf}"
     )
     _ec=$?
@@ -138,7 +138,7 @@ run_test_install_lifecycle() {
 
     # --- self-uninstall without --force fails closed ---
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         PATH="${CI_USER_BIN}:${PATH}" \
         sh "${_sm_bin}" --json self-uninstall 2>"${_errf}"
     )
@@ -150,7 +150,7 @@ run_test_install_lifecycle() {
 
     # --- self-uninstall --force removes ---
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         PATH="${CI_USER_BIN}:${PATH}" \
         sh "${_sm_bin}" --json --force self-uninstall 2>"${_errf}"
     )
@@ -162,7 +162,7 @@ run_test_install_lifecycle() {
 
     # --- strict CHECKSUM pin mismatch aborts ---
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         CHECKSUM="0000000000000000000000000000000000000000000000000000000000000000" \
         sh "${SCRIPT}" --json install 2>"${_errf}"
     )
@@ -175,7 +175,7 @@ run_test_install_lifecycle() {
     # --- strict CHECKSUM pin match succeeds ---
     _good=$(sha256sum "${SCRIPT}" | awk '{print $1}')
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         CHECKSUM="${_good}" \
         sh "${SCRIPT}" --json install 2>"${_errf}"
     )
@@ -194,7 +194,7 @@ run_test_install_lifecycle() {
     assert_file_exists "local binary present for downgrade tests" "${_sm_bin}"
 
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         PATH="${CI_USER_BIN}:${PATH}" \
         sh "${_sm_bin}" --json self-update 2>"${_errf}"
     )
@@ -207,7 +207,7 @@ run_test_install_lifecycle() {
     assert_eq "local version unchanged after refused downgrade" "${PRODUCT_VERSION}" "$_loc"
 
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         PATH="${CI_USER_BIN}:${PATH}" \
         sh "${_sm_bin}" --json --force self-update 2>"${_errf}"
     )
@@ -218,7 +218,7 @@ run_test_install_lifecycle() {
     assert_eq "local version after forced downgrade" "0.9.0" "$_loc"
 
     # cleanup install for tidy temp
-    HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
+    HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         PATH="${CI_USER_BIN}:${PATH}" \
         sh "${_sm_bin}" --json --force self-uninstall >/dev/null 2>&1 || true
 

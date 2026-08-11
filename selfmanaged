@@ -43,8 +43,8 @@ APP_NAME="selfmanaged"
 : "${SHORT_DESCRIPTION:=${APP_DESC}}"
 : "${DESCRIPTION:=POSIX /bin/sh Type 0 CLI: install, version-check, self-update, self-uninstall, and about.}"
 # Product version SSOT (semver). Extractors use: grep '^VERSION="'
-VERSION="1.2.1"
-: "${VERSION:=1.2.1}"
+VERSION="1.2.2"
+: "${VERSION:=1.2.2}"
 
 # Runtime flags (safe defaults)
 : "${QUIET:=0}"
@@ -2265,7 +2265,7 @@ app_about() {
     : "${QUIET:=0}"
     : "${APP_NAME:=selfmanaged}"
     # Version comes from global SSOT (VERSION="…" hard-assign near top); default only if unset
-    : "${VERSION:=1.2.0}"
+    : "${VERSION:=1.2.2}"
     : "${GLOBAL_BIN:=/usr/local/bin}"
     : "${USER_BIN:=${HOME}/.local/bin}"
     : "${SCRIPT_URL:=}"
@@ -2381,6 +2381,11 @@ app_about() {
     out_info "Storage (effective): ${EFFECTIVE_STORAGE_DIR}"
     out_info "Storage (fallback config field): ${STORAGE_DIR}"
 
+    # --- DOMAIN_ABOUT_FIELDS (specializee injection) ---
+    # Specialized products MAY emit domain diagnostics here (human + mirror JSON fields
+    # in the JSON branch above). Bootstrap A has no domain surface — leave empty.
+    # --- end DOMAIN_ABOUT_FIELDS ---
+
     out_empty_line
     out_info "Useful commands:"
     out_info "   ${APP_NAME} help           → Full usage"
@@ -2394,7 +2399,7 @@ app_about() {
 
 app_version() {
     : "${APP_NAME:=selfmanaged}"
-    : "${VERSION:=1.2.0}"
+    : "${VERSION:=1.2.2}"
     : "${JSON:=0}"
     if [ "${JSON}" -eq 1 ]; then
         # Same machine contract as historical app_main inline path
@@ -2449,6 +2454,12 @@ app_help() {
     out_plain "  self-uninstall       Remove ${APP_NAME} (safe PATH cleanup)"
     out_plain "  help                 Show this help"
     out_empty_line
+
+    # --- DOMAIN_HELP_ROWS (specializee injection) ---
+    # Specialized products MAY insert a "Domain commands:" section here (after Type 0,
+    # before Global Options). Bootstrap A has no domain verbs — leave empty.
+    # Keep Type 0 rows above; do not replace this help with domain-only text.
+    # --- end DOMAIN_HELP_ROWS ---
 
     out_info "Global Options:"
     out_plain "  --quiet, -q          Suppress info/success (errors and warnings still shown)"
@@ -2517,8 +2528,11 @@ app_help() {
 #     Cases A/B/C (not installed / local / global). --force only for deliberate
 #     re-download/replace — not required for a second one-liner run.
 #     SSOT: requirement-shell-cli-zero-arguments.md (selfmanaged = Type O).
+# 2026-08-11:
+#   - Specializee injection anchors (DOMAIN_DISPATCH_*) for A→B products; empty
+#     argv remains Type O — domain setup uses explicit verbs only.
 #
-# Last reviewed: 2026-07-14
+# Last reviewed: 2026-08-11
 # =============================================================================
 
 app_main() {
@@ -2544,13 +2558,14 @@ app_main() {
 
     # === ZERO-ARG = Type O install-ensure (curl | sh contract) ===
     # Product type: Type O (online-install) — not Type N help-default.
-    # Empty argv always means "ensure installed", never help.
+    # Empty argv always means "ensure installed", never help, never domain setup.
     # Cases: not installed | installed local | installed global
     # - not installed → install (TTY prompt via inst_maybe_install; non-TTY auto)
     # - already installed → success no-op (inst_perform_install); no --force required
     # - --force / FORCE_REINSTALL only for deliberate re-download/replace
     # Exit status must reflect install outcome (failed download/checksum → non-zero).
     # SSOT: docs/requirements/requirement-shell-cli-zero-arguments.md
+    # Specializee: do NOT replace this block with domain full-setup.
     if [ $# -eq 0 ]; then
         if [ "${JSON}" -eq 1 ] || [ "${QUIET}" -eq 1 ]; then
             inst_perform_install
@@ -2571,9 +2586,19 @@ app_main() {
             --json)     JSON=1; QUIET=1 ;;
             --debug)    DEBUG=1 ;;
             --force)    FORCE=1; FORCE_REINSTALL=1 ;;
+            # --- DOMAIN_DISPATCH_FLAGS (specializee injection) ---
+            # Specialized products MAY parse domain-only flags here (e.g. --no-cloudflare).
+            # --- end DOMAIN_DISPATCH_FLAGS ---
             version|about|help|version-check|self-update|self-uninstall|install)
                 COMMAND="$1"
                 ;;
+            # --- DOMAIN_DISPATCH_COMMANDS (specializee injection) ---
+            # Specialized products MAY list domain verbs here (e.g. run|domains|sync).
+            # Example shape:
+            #   run|setup|domains)
+            #       COMMAND="$1"
+            #       ;;
+            # --- end DOMAIN_DISPATCH_COMMANDS ---
             *)
                 out_die "Unknown command or flag: $1. See '${APP_NAME} help'."
                 ;;
@@ -2602,6 +2627,10 @@ app_main() {
         install)
             inst_perform_install
             ;;
+        # --- DOMAIN_DISPATCH_ROUTES (specializee injection) ---
+        # Specialized products MAY route domain commands here (call domain handlers).
+        # Host-mutating domain paths MUST privilege-gate before any host write.
+        # --- end DOMAIN_DISPATCH_ROUTES ---
         help|*)
             app_help
             ;;

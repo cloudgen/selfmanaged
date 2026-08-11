@@ -112,7 +112,7 @@ Root may write global install path; non-root uses user path. Do not assume root 
 | **Uninstall steps** | `inst_self_uninstall_determine_bin` → `inst_self_uninstall_confirm_and_remove` → `inst_self_uninstall_cleanup_path` |
 | **PATH ensure** | `path_add_shell` / bash / zsh / fish helpers on user install |
 | **Privilege** | Type 0 only for self-management surface; no dedicated system user |
-| **Version SSOT** | `VERSION` default `1.2.1` in script config block (`VERSION="1.2.1"`) |
+| **Version SSOT** | `VERSION` default `1.2.2` in script config block (`VERSION="1.2.2"`) |
 
 #### Normative acceptance behaviors (this project)
 

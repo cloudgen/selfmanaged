@@ -84,7 +84,7 @@ run_test_cli() {
     # --- storage resolve isolation (EFFECTIVE_STORAGE_DIR via util_resolve_storage) ---
     ci_isolated_env 2>/dev/null || true
     if [ -n "${CI_HOME:-}" ]; then
-        _out=$(HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN:-${CI_HOME}/.local/bin}" \
+        _out=$(HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN:-${CI_HOME}/.local/bin}" GLOBAL_BIN="${CI_GLOBAL_BIN:-${CI_HOME}/global-bin}" \
             sh "${SCRIPT}" --json about 2>/dev/null)
         assert_contains "isolated about effective_storage has app" "$_out" "${APP_NAME:-selfmanaged}"
         case "$_out" in
@@ -93,7 +93,7 @@ run_test_cli() {
         esac
         assert_contains "storage_dir field present under isolation" "$_out" '"storage_dir"'
         _custom="${CI_HOME}/custom-storage-root"
-        _out=$(HOME="${CI_HOME}" STORAGE_DIR="${_custom}" \
+        _out=$(HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" STORAGE_DIR="${_custom}" \
             sh "${SCRIPT}" --json about 2>/dev/null)
         # STORAGE_DIR env appears on storage_dir config field (tier-3 / override field)
         assert_contains "storage_dir honors STORAGE_DIR env" "$_out" "custom-storage-root"
@@ -160,7 +160,7 @@ run_test_cli() {
     ci_isolated_env
     _errf="${CI_HOME}/zero-arg-err.txt"
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" \
         SCRIPT_URL="http://127.0.0.1:1/selfmanaged-unreachable" \
         sh "${SCRIPT}" </dev/null 2>"${_errf}"
     )
@@ -183,7 +183,7 @@ run_test_cli() {
     chmod +x "${CI_USER_BIN}/selfmanaged"
     _errf="${CI_HOME}/un-err.txt"
     _out=$(
-        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" \
+        HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" \
         sh "${SCRIPT}" --json self-uninstall 2>"${_errf}"
     )
     _ec=$?

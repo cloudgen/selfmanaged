@@ -48,9 +48,11 @@ Optional multi-file layout under `src/` for future authoring **MAY** exist only 
 **`app_*` vs domain prefix:**
 
 - **`app_*`** — cross-cutting CLI surface every shell CLI needs (main, help, about, version routing).  
-- **`{{APP_NAME}}_*`** — domain business logic only.  
+- **`{{APP_NAME}}_*`** (or a short domain stem, e.g. `gln_`, `gs_`, `timer_`) — domain business logic only.  
 - Do **not** put domain ops under `app_*`.  
 - Do **not** put generic about/help/main under the domain prefix unless a specialized requirement explicitly requires product-prefixed aliases.
+
+**Specializee note:** When grafting legacy domain DNA onto this bootstrap, prefer a domain prefix for new handlers. Temporary **output shims** (`info` → `out_info`, …) are allowed only as bridges to `out_*` SSOT (`requirement-shell-output-requirements.md`) — do not invent a durable second output family.
 
 **Strict naming rules:**
 

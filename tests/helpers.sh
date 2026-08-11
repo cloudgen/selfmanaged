@@ -125,15 +125,24 @@ ci_stop_channel() {
     fi
 }
 
-# Isolated HOME + USER_BIN for install tests. Sets CI_HOME, CI_USER_BIN.
+# Isolated HOME + USER_BIN + GLOBAL_BIN for install tests.
+# GLOBAL_BIN isolation is required so a host install under /usr/local/bin/${APP_NAME}
+# does not make inst_is_installed() true during CI (shadows local channel tests).
+# Lesson: gitlab-nginx specialize 2026-08-11 (TP-LC under multi-install hosts).
+# Sets CI_HOME, CI_USER_BIN, CI_GLOBAL_BIN.
 ci_isolated_env() {
     CI_HOME=$(mktemp -d "${TMPDIR:-/tmp}/sm-home.XXXXXX")
     CI_USER_BIN="${CI_HOME}/.local/bin"
-    mkdir -p "${CI_USER_BIN}"
+    CI_GLOBAL_BIN="${CI_HOME}/global-bin"
+    mkdir -p "${CI_USER_BIN}" "${CI_GLOBAL_BIN}"
     export HOME="${CI_HOME}"
     export USER_BIN="${CI_USER_BIN}"
+    export GLOBAL_BIN="${CI_GLOBAL_BIN}"
     # Prevent accidental use of developer install / real channel unless set later
     unset CHECKSUM 2>/dev/null || true
+    # Prefer user path for non-root isolate (do not FORCE_GLOBAL)
+    unset FORCE_GLOBAL 2>/dev/null || true
+    unset FORCE_USER 2>/dev/null || true
 }
 
 ci_cleanup_env() {
@@ -141,7 +150,9 @@ ci_cleanup_env() {
         rm -rf "${CI_HOME}"
         CI_HOME=
         CI_USER_BIN=
+        CI_GLOBAL_BIN=
     fi
+    unset GLOBAL_BIN 2>/dev/null || true
 }
 
 # Run product under isolated env; args are script argv after script path.
