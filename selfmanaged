@@ -43,8 +43,8 @@ APP_NAME="selfmanaged"
 : "${SHORT_DESCRIPTION:=${APP_DESC}}"
 : "${DESCRIPTION:=POSIX /bin/sh Type 0 CLI: install, version-check, self-update, self-uninstall, and about.}"
 # Product version SSOT (semver). Extractors use: grep '^VERSION="'
-VERSION="1.2.2"
-: "${VERSION:=1.2.2}"
+VERSION="1.2.3"
+: "${VERSION:=1.2.3}"
 
 # Runtime flags (safe defaults)
 : "${QUIET:=0}"
@@ -922,8 +922,9 @@ inst_perform_install_atomic_install() {
 # =============================================================================
 #
 # Respects both --quiet and --json modes.
-# In JSON mode we skip the interactive prompt entirely.
-# Now uses prompt_yes_no() as single source of truth for confirmation.
+# Quiet/JSON: no prompt — MUST call inst_perform_install (not return 0 skip).
+# Interactive gate consumes process TTY (set once at startup), not a second [ -t.
+# Uses prompt_yes_no() as single source of truth for confirmation.
 #
 # !!! DO NOT MODIFY OR SIMPLIFY !!!
 # Designed to be reusable in other projects.
@@ -934,13 +935,18 @@ inst_perform_install_atomic_install() {
 #     assignment (those were only set inside inst_perform_install). Crash:
 #     "IS_ROOT: parameter not set" after printing "Recommended installation
 #     command:". Fixed with local privilege detection + SH/SCRIPT_URL defaults.
+# 2026-09-02:
+#   - JSON/QUIET returned 0 without placing (SM-BUG-01). Specializees that
+#     copy this helper as Case A SSOT inherited silent success. Now calls
+#     inst_perform_install and returns its status. Prompt gate reads TTY.
 #
-# Last reviewed: 2026-07-13
+# Last updated: 2026-09-02
 # =============================================================================
 
 inst_maybe_install() {
     : "${QUIET:=0}"
     : "${JSON:=0}"
+    : "${TTY:=0}"
     : "${FORCE_REINSTALL:=0}"
     : "${SCRIPT_URL:=}"
     : "${SH:=sh}"
@@ -954,9 +960,10 @@ inst_maybe_install() {
     if inst_is_installed && [ "${FORCE_REINSTALL}" -eq 0 ]; then
         return 0
     fi
-    # In JSON mode or quiet mode we do not show interactive prompts
+    # Quiet or JSON: place with no prompt (requirement-shell-cli-zero-arguments §2.4).
     if [ "${JSON}" -eq 1 ] || [ "${QUIET}" -eq 1 ]; then
-        return 0
+        inst_perform_install
+        return $?
     fi
     out_empty_line
     out_plain "Note: '${APP_NAME}' is not installed yet."
@@ -972,24 +979,21 @@ inst_maybe_install() {
     fi
     out_empty_line
 
-    local should_install=false
+    _maybe_should_install=0
 
-    if [ -t 0 ] && [ -t 1 ]; then
-        # Use single source of truth for the yes/no prompt
+    if [ "${TTY}" -eq 1 ]; then
         if prompt_yes_no "Install ${APP_NAME} ${VERSION} now?"; then
-            should_install=true
+            _maybe_should_install=1
         else
-            should_install=false
             out_plain "Installation skipped by user."
-            return 0 
+            return 0
         fi
     else
         out_plain "Non-interactive mode detected → installing automatically..."
-        should_install=true
+        _maybe_should_install=1
     fi
 
-    if [ "$should_install" = "true" ]; then
-        # Propagate install failure (do not mask network/checksum/io errors as success).
+    if [ "${_maybe_should_install}" -eq 1 ]; then
         inst_perform_install
         return $?
     fi
@@ -2094,13 +2098,15 @@ util_resolve_storage() {
 # out_info / out_msg_n. Do not replace those with raw printf + read.
 # See requirement-shell-output-requirements.md §2.1.1.
 #
-# Last reviewed: 2026-07-12
+# Last updated: 2026-09-02
 # =============================================================================
 
 prompt_ask() {
     # --- Safe Variable Defaults ---
     : "${JSON:=0}"
     : "${QUIET:=0}"
+    : "${TTY:=0}"
+    : "${INTERACTIVE:=0}"
 
     # set -u safe: missing args become empty defaults (INC-20260713-001 class)
     local message="${1-}"
@@ -2113,12 +2119,11 @@ prompt_ask() {
         return 0
     fi
 
-    # Must have a real TTY (unless caller explicitly set INTERACTIVE=1)
-    if ! [ -t 0 ] || ! [ -t 1 ]; then
-        if [ "${INTERACTIVE:-0}" -ne 1 ]; then
-            printf '%s' "${default}"
-            return 0
-        fi
+    # Consume process TTY (measured once at startup). INTERACTIVE=1 is the
+    # documented override when low-level TTY checks are flaky.
+    if [ "${TTY}" -ne 1 ] && [ "${INTERACTIVE}" -ne 1 ]; then
+        printf '%s' "${default}"
+        return 0
     fi
 
     # Show current value if present
@@ -2168,7 +2173,7 @@ prompt_ask() {
 # This helper exists specifically to prevent that regression and to enforce
 # CIAO-Lite principles of Caution, Intentionality, and Over-protect.
 #
-# Last reviewed: 29 April 2026
+# Last updated: 2026-09-02
 # =============================================================================
 
 prompt_yes_no() {
@@ -2176,6 +2181,7 @@ prompt_yes_no() {
     # Defensive defaults - never assume globals are set
     : "${JSON:=0}"
     : "${QUIET:=0}"
+    : "${TTY:=0}"
 
     local message="$1"
 
@@ -2184,8 +2190,8 @@ prompt_yes_no() {
         return 1   # treat as "no" in non-interactive modes
     fi
 
-    # Must be interactive TTY
-    if ! [ -t 0 ] || ! [ -t 1 ]; then
+    # Consume process TTY (measured once at startup; no second [ -t).
+    if [ "${TTY}" -ne 1 ]; then
         return 1
     fi
 

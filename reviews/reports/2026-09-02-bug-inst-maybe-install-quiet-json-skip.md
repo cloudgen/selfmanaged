@@ -2,8 +2,8 @@
 
 **Date:** 2026-09-02  
 **Mode:** Coverage + human-readable recast (law aligned; ship unit not patched)  
-**Product:** selfmanaged **1.2.2** (`./selfmanaged`)  
-**Status:** open items  
+**Product:** selfmanaged **1.2.3** (`./selfmanaged`)  
+**Status:** closed (helper patched 2026-09-02)  
 **Finding ID:** SM-BUG-01  
 **Lesson:** L-INST-MAYBE-01  
 **Test:** TP-INST-MAYBE-01 (**TODO**)
@@ -79,7 +79,7 @@ Related live Gaps (law > code; same helper):
 - Suggestion: Call `inst_perform_install`; return its status.
 - Lesson: L-INST-MAYBE-01
 - Test: TP-INST-MAYBE-01
-- Status: open
+- Status: closed
 
 ### Issue 2 -- Severity: suggestion
 - File: `selfmanaged:977`
@@ -87,7 +87,7 @@ Related live Gaps (law > code; same helper):
 - Suggestion: Read `TTY` (same as the prompt samples now in the interactive requirement).
 - Lesson: L-INST-MAYBE-01
 - Test: TP-INST-MAYBE-01
-- Status: open
+- Status: closed
 
 ## Related
 
@@ -100,4 +100,4 @@ Related live Gaps (law > code; same helper):
 | `reviews/lessons.md` | L-INST-MAYBE-01 |
 
 **Written by:** Review (coverage + human-readable recast)  
-**Review status:** Findings open — law readable and aligned; ship unit not patched
+**Review status:** Closed — helper places under quiet/JSON; prompts consume `TTY`; TP-LC-10 in suite

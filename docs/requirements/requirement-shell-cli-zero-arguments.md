@@ -168,14 +168,14 @@ Empty-argv quiet/json in `app_main` is **not** a license for the helper to no-op
 | **Ship unit** | Repo root `./selfmanaged` |
 | **Dispatcher** | `app_main` — empty-argv block **before** flag/command parse default help |
 | **Install ensure** | `inst_perform_install` (quiet/json and already-installed no-op) |
-| **Friendly first install** | `inst_maybe_install` (TTY confirm / non-TTY auto) when not installed and not quiet/json. **Gap (SM-BUG-01):** live helper still `return 0` under quiet/json without placing; dispatcher currently bypasses that path for empty argv. |
+| **Friendly first install** | `inst_maybe_install` (TTY confirm / non-TTY auto) when not installed and not quiet/json. Quiet/JSON **MUST** call `inst_perform_install` (SM-BUG-01 fixed 2026-09-02). |
 | **Detect SSOT** | `inst_is_installed` ← `inst_get_version` |
 | **Global path** | `GLOBAL_BIN` default `/usr/local/bin` |
 | **Local path** | `USER_BIN` default `${HOME}/.local/bin` |
 | **Force wiring** | `--force` → `FORCE=1` and `FORCE_REINSTALL=1` in `app_main` |
 | **Output SSOT** | `out_success` / `out_info` / `out_json` / errors via `out_*` |
 | **Channel** | `SCRIPT_URL` (compose from `REPO_USER` / `REPO_NAME` / `APP_NAME`) for download path inside install |
-| **Tests** | `tests/test_cli.sh` (Case A failure when not installed); `tests/test_install_lifecycle.sh` (Case B local + Case C global already-installed → not help). **Gap:** no suite row yet that invokes `inst_maybe_install` itself under `QUIET=1` / `JSON=1` when not installed (`TP-INST-MAYBE-01`). |
+| **Tests** | `tests/test_cli.sh` (Case A failure when not installed); `tests/test_install_lifecycle.sh` (Case B local + Case C global already-installed → not help; **TP-LC-10** / **TP-INST-MAYBE-01** helper under QUIET/JSON). |
 
 #### Dispatcher algorithm (normative sketch)
 
@@ -256,7 +256,16 @@ This requirement is satisfied when all of the following hold:
 5. `--force` only for deliberate reinstall; not required for ensure.  
 6. `help` works when invoked explicitly.  
 7. Tests cover Case A failure (not installed, bad channel) and already-installed not-help for local (Case B) and global (Case C).  
-8. Changes cite `requirement-shell-cli-zero-arguments`.
+8. **TP-LC-10** / **TP-INST-MAYBE-01:** not installed + QUIET/JSON through `inst_maybe_install` places or fail closed.  
+9. Changes cite `requirement-shell-cli-zero-arguments`.
+
+### Design-time verification
+
+| TP family / ID | Suite | Status |
+|----------------|-------|--------|
+| **TP-LC-10** / **TP-INST-MAYBE-01** | `tests/test_install_lifecycle.sh` | have |
+
+**Map:** `reviews/test-plan.md`
 
 ---
 

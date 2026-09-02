@@ -153,6 +153,24 @@ ci_cleanup_env() {
         CI_GLOBAL_BIN=
     fi
     unset GLOBAL_BIN 2>/dev/null || true
+    JSON=0
+    QUIET=0
+    TTY=0
+    FORCE_REINSTALL=0
+}
+
+# Source the ship unit without running app_main (test-only).
+# Product bootstrap always invokes app_main; helper tests strip that one line.
+ci_source_ship_unit() {
+    : "${CI_HOME:?ci_source_ship_unit requires ci_isolated_env}"
+    : "${SCRIPT:?}"
+    _lib="${CI_HOME}/ship-as-lib.sh"
+    awk '
+        /^app_main "\$@"$/ { print "# app_main \"$@\"  # stripped for helper tests"; next }
+        { print }
+    ' "${SCRIPT}" > "${_lib}"
+    # shellcheck disable=SC1090
+    . "${_lib}"
 }
 
 # Run product under isolated env; args are script argv after script path.

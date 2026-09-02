@@ -226,7 +226,7 @@ prompt_ask() {
 
 This dual policy is intentional: **pipe / quiet / json first-install proceeds**; **destructive uninstall does not** without `--force`.
 
-**Honesty (this ship unit, 2026-09-02):** `prompt_yes_no`, `prompt_ask`, and `inst_maybe_install` still re-test `[ -t 0 ] && [ -t 1 ]`. `inst_maybe_install` still `return 0` under quiet/json without placing. Those are **Gaps** (this file is law; `./selfmanaged` has not yet been patched). Empty-argv quiet/json currently works because `app_main` calls `inst_perform_install` first.
+**Honesty (this ship unit, 2026-09-02):** `prompt_yes_no`, `prompt_ask`, and `inst_maybe_install` consume process `TTY`. Quiet/JSON Case A through the helper calls `inst_perform_install` (SM-BUG-01).
 
 ### 2.6 Why This Requirement Exists (Direct CIAO Alignment)
 

@@ -24,13 +24,13 @@
 | 2026-07-16 | `reports/2026-07-16-plan-and-product-review.md` | Plan review + full Type 0 re-check | PASS=102 FAIL=0 | **Pass with nits** |
 | 2026-07-19 | `reports/2026-07-19-selfmanaged-product-review.md` | Full Type 0 + class gate + ops SSH | PASS=102 FAIL=0 | **Pass with nits** |
 | 2026-08-11 | `reports/2026-08-11-selfmanaged-specializee-revision.md` | GLOBAL_BIN tests + specializee contract + anchors | PASS=102 FAIL=0 | **Pass** (1.2.2) |
-| 2026-09-02 | `reports/2026-09-02-bug-inst-maybe-install-quiet-json-skip.md` | Helper quiet/json skip; REQ coverage + human-facing | — | **Open bug** (law aligned; code Gap) |
+| 2026-09-02 | `reports/2026-09-02-bug-inst-maybe-install-quiet-json-skip.md` | Helper quiet/json skip; REQ coverage + human-facing | PASS=108 FAIL=0 | **Closed** (helper patched) |
 
 ## Open items summary
 
 | ID | Severity | Status | One-line |
 |----|----------|--------|----------|
-| SM-BUG-01 | P1 (specializee / helper SSOT) | **open** | Helper quiet/json returns 0 without placing; origin A one-liner still works via dispatcher |
+| SM-BUG-01 | P1 (specializee / helper SSOT) | **closed** (2026-09-02) | Helper quiet/json now places or fail closed; TP-LC-10 |
 | SM-PLAN-01 | P3 | open | TP-JSON-RAW-01 suite lock-in still **TODO** |
 | SM-REV-05 | P3 | open | Lesson: no bulk-sed of CIAO org URLs when retargeting REQs |
 | SM-OPS-SSH-01 | P2 | **closed** (1.2.1) | cloudgen profile activated to default `~/.ssh`; GitHub `Hi cloudgen!` |
@@ -44,5 +44,5 @@
 
 - Product class: **bootstrap project** (no domain SSOT); **software-development** class law Active.  
 - Storage is wired Type 0 scratch isolation — not domain product ops.  
-- Version **1.2.2** target/runtime/CHANGELOG/SECURITY aligned (bumped 2026-08-11).  
+- Version **1.2.3** target/runtime/CHANGELOG/SECURITY aligned (bumped 2026-09-02).  
 - See **`revision-plan.md`** for specializee reflection backlog.  

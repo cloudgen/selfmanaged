@@ -19,6 +19,62 @@ run_test_install_lifecycle() {
         return 1
     fi
 
+    # --- TP-LC-10 / TP-INST-MAYBE-01: helper itself under JSON/QUIET (not empty argv) ---
+    ci_source_ship_unit
+    EFFECTIVE_STORAGE_DIR=$(util_resolve_storage)
+    export EFFECTIVE_STORAGE_DIR TMPDIR="${EFFECTIVE_STORAGE_DIR}"
+    SCRIPT_URL="${CI_SCRIPT_URL}"
+    TTY=0
+    FORCE_REINSTALL=0
+
+    JSON=1
+    QUIET=1
+    inst_maybe_install >/dev/null 2>"${CI_HOME}/maybe-json.err"
+    _ec=$?
+    assert_eq "TP-LC-10 JSON helper not-installed exit 0" 0 "$_ec"
+    assert_file_exists "TP-LC-10 JSON helper placed binary" "${CI_USER_BIN}/selfmanaged"
+
+    rm -f "${CI_USER_BIN}/selfmanaged"
+    JSON=0
+    QUIET=1
+    inst_maybe_install >/dev/null 2>"${CI_HOME}/maybe-quiet.err"
+    _ec=$?
+    assert_eq "TP-LC-10 QUIET helper not-installed exit 0" 0 "$_ec"
+    assert_file_exists "TP-LC-10 QUIET helper placed binary" "${CI_USER_BIN}/selfmanaged"
+
+    JSON=0
+    QUIET=0
+    rm -f "${CI_USER_BIN}/selfmanaged"
+    ci_stop_channel
+    ci_cleanup_env
+
+    ci_isolated_env
+    ci_source_ship_unit
+    EFFECTIVE_STORAGE_DIR=$(util_resolve_storage)
+    export EFFECTIVE_STORAGE_DIR TMPDIR="${EFFECTIVE_STORAGE_DIR}"
+    SCRIPT_URL="http://127.0.0.1:1/selfmanaged-unreachable"
+    JSON=1
+    QUIET=1
+    TTY=0
+    FORCE_REINSTALL=0
+    inst_maybe_install >/dev/null 2>"${CI_HOME}/maybe-fail.err"
+    _ec=$?
+    if [ "$_ec" -ne 0 ]; then
+        t_pass "TP-LC-10 JSON helper bad channel exits non-zero"
+    else
+        t_fail "TP-LC-10 JSON helper bad channel expected non-zero (fake success skip)"
+    fi
+    assert_file_missing "TP-LC-10 JSON helper bad channel left no binary" "${CI_USER_BIN}/selfmanaged"
+    JSON=0
+    QUIET=0
+    ci_cleanup_env
+
+    ci_isolated_env
+    if ! ci_start_channel; then
+        ci_cleanup_env
+        return 1
+    fi
+
     # Ensure trap cleanup even if a later assert fails hard
     # (caller of run.sh also cleans; this is belt-and-suspenders for this suite)
     _sm_bin="${CI_USER_BIN}/selfmanaged"

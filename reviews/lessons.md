@@ -6,7 +6,7 @@
 
 | L-ID | Failure mode | Re-check | Source | Open? |
 |------|--------------|----------|--------|-------|
-| L-INST-MAYBE-01 | First-install helper returns success under quiet/json without placing; peer REQ used to document that skip | Helper calls `inst_perform_install` under QUIET/JSON; both REQs say the same; specializee copies of the helper must not skip | SM-BUG-01 | **Open** (law aligned 2026-09-02; ship unit still skips) |
+| L-INST-MAYBE-01 | First-install helper returns success under quiet/json without placing; peer REQ used to document that skip | Helper calls `inst_perform_install` under QUIET/JSON; both REQs say the same; specializee copies of the helper must not skip | SM-BUG-01 | **Closed** (2026-09-02 helper + TP-LC-10) |
 | L-REQ-CIAO-URL-01 | Bulk-sed of org names when retargeting REQs rewrites CIAO philosophy URLs (`cloudgen/ciao`) into product-channel identity | Grep REQs for `github.com/cloudgen/ciao` after retarget; never `s/cloudgen/<product>/g` over whole docs | SM-REV-05 | **Open** (process vigilance; teach on next origin review) |
 | L-OPS-SSH-01 | Active ssh-user-profile GitHub DENIED while another profile is git-capable; default ≠ repository-user | Pre-git report: active profile + git-capable list; activate matching REPO_USER | SM-OPS-SSH-01 | **Closed** (2026-07-19 activate cloudgen) |
 | L-STOR-01 | Storage resolver dead code; tiers 1–2 no mkdir; not called from main/about | Call sites of `util_resolve_storage`; mkdir all tiers; about JSON storage fields | SM-STOR-01 | **Closed** (2026-07-16 wire) |
