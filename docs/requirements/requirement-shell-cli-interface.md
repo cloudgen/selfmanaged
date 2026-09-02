@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-cli-interface.md  
-**Status**: Active (Version 1.1.0)  
+**Status**: Active (Version 1.1.1)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -10,6 +10,31 @@ It defines a **Type 0–centric self-managed shell CLI** (install / update / uni
 
 **Scope:** User-facing command names, flags, dispatch, privilege labels, and mode contracts.  
 **Out of scope (own requirements when specialized):** Online-install checksum mechanics detail, self-management safety beyond the command surface, shell coding style, full output-function catalog (cited, not re-owned).
+
+### 1.1 Human-facing
+
+**In one sentence:** This file is the **menu**: which words you type (`version`, `help`, `install`, `self-update`, `self-uninstall`, …), which flags (`--quiet`, `--json`, `--force`), and that **you run those as yourself** — this product does not change the host OS or switch to a dedicated account.
+
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | The person who types the command | `selfmanaged help` · `selfmanaged version` |
+| The other role | Empty argv (install-ensure) and lifecycle safety | `requirement-shell-cli-zero-arguments.md` · `requirement-shell-self-management.md` |
+| Not this file | Checksum, storage paths, `out_*` internals | Peer requirements |
+
+| Includes | Excludes |
+|----------|----------|
+| Command names, flags, “unknown command” fail | Host package install, dedicated-account app ops |
+| Empty-argv **row** pointing at the zero-arguments file | Re-owning the full Case A/B/C matrix |
+
+| Surface | What you open | What for |
+|---------|---------------|----------|
+| `selfmanaged help` | Command | Listed verbs and flags |
+| `./selfmanaged` | Program file | Dispatcher |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| See the menu | Help lists install, version, about, self-update, self-uninstall, and flags. An unknown word is an error, not a silent no-op. | `selfmanaged help` |
+| Ask for JSON | Same verbs; structured objects; no human banners. | `selfmanaged --json version` |
 
 ---
 
@@ -221,6 +246,6 @@ This requirement is satisfied for the selfmanaged shell CLI when all of the foll
 
 ---
 
-**Last Updated**: 2026-07-19  
+**Last Updated**: 2026-09-02  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 6, 10, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

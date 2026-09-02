@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-modular-function-design.md  
-**Status**: Active (Version 1.0.0)  
+**Status**: Active (Version 1.0.1)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -12,6 +12,30 @@ It defines modular function organization for a **monolithic yet modular** single
 **Out of scope (cited, not re-owned):** Command surface (`requirement-shell-cli-interface.md`); self-management behavior (`requirement-shell-self-management.md`); idempotency matrix (`requirement-shell-idempotency.md`); full POSIX coding style beyond modular structure.
 
 **Core idea:** Modularity is achieved through **clear function boundaries, consistent prefixes, and full CIAO documentation** — **not** by splitting the main CLI into multiple shipped files.
+
+### 1.1 Human-facing
+
+**In one sentence:** People still install **one file** (`./selfmanaged`); inside that file, functions stay in labeled families (`out_` print, `inst_` install, `app_` menu, `prompt_` questions) so a change to help does not rewrite download.
+
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | Maintainer editing one family | Change `app_help`, leave `inst_perform_install` |
+| The other role | The `curl \| sh` user who needs a **single** downloadable file | One ship unit at repo root |
+| Not this file | What each command **does** (CLI / lifecycle / output peers) | Prefix table here; behavior tables elsewhere |
+
+| Includes | Excludes |
+|----------|----------|
+| Prefixes, headers, “do not simplify” zones, surgical edits | Splitting the shipped CLI into many files |
+| `inst_maybe_install` as an `inst_` helper | Re-owning Case A quiet/json law (zero-arguments + interactive peers) |
+
+| Surface | What you open | What for |
+|---------|---------------|----------|
+| `./selfmanaged` | The one program file | Function families |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| Change a message | Edit an `out_*` helper, not a raw `echo` in install. | Open `./selfmanaged`, find `out_` |
+| Change first-install ask | Edit `inst_maybe_install` / `prompt_yes_no`, not `app_help`. | Same file; different prefix |
 
 ---
 
@@ -255,6 +279,6 @@ A modular-structure change for selfmanaged is **not done** if any of the followi
 
 ---
 
-**Last Updated**: 2026-07-19  
+**Last Updated**: 2026-09-02  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 6, 7, 8, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

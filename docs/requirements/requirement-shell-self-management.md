@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-self-management.md  
-**Status**: Active (Version 1.0.0)  
+**Status**: Active (Version 1.0.1)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -12,6 +12,32 @@ It defines lifecycle capabilities and safety rules for this shell project’s se
 **Out of scope (cited, not re-owned):** Full CLI dispatcher catalog (`requirement-shell-cli-interface.md`); pure re-run matrix (`requirement-shell-idempotency.md`); full online-install algorithm depth; Type 1 host bootstrap / Type 2 system-user app ops.
 
 **Must not confuse with:** OS package managers, domain product start/stop ops, dedicated system-user policy, or non-CLI “self-management.”
+
+### 1.1 Human-facing
+
+**In one sentence:** After the program is on disk, **you** can check for a newer file, replace it from the same internet channel, or remove it — without an OS package manager — and uninstall **will not delete** unless you confirm or pass `--force`.
+
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | The person who installed the CLI | `selfmanaged version-check` · `selfmanaged self-update` |
+| The other role | First-time empty argv (install-ensure) | `requirement-shell-cli-zero-arguments.md` |
+| Not this file | apt/apk, host packages, dedicated-account app start/stop | Out of scope for this product |
+
+| Includes | Excludes |
+|----------|----------|
+| `version-check`, `self-update`, `self-uninstall`, `about` | Empty-argv first install (peer); checksum math (peer) |
+| Uninstall refuse without `--force` off a terminal / in JSON | Pretending the user cancelled when confirm was required |
+
+| Surface | What you open | What for |
+|---------|---------------|----------|
+| `selfmanaged about` | Command | Installed? where? |
+| `selfmanaged self-uninstall` | Command | Remove with confirm or `--force` |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| See if a newer file exists | Compare local version to the channel. Do not mutate the install. | `selfmanaged version-check` · `selfmanaged --json version-check` |
+| Update | If the channel is newer, replace the installed file. If already latest, say so. | `selfmanaged self-update` |
+| Remove | JSON without `--force` **must fail** with “confirm required,” not fake success. | `selfmanaged --json self-uninstall` · `selfmanaged --force self-uninstall` |
 
 ---
 
@@ -206,6 +232,6 @@ Work claiming self-management support for selfmanaged is **not done** if any of 
 
 ---
 
-**Last Updated**: 2026-07-19  
+**Last Updated**: 2026-09-02  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 10, 11, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

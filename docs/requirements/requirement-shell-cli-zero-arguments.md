@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-cli-zero-arguments.md  
-**Status**: Active (Version 1.2.0)  
+**Status**: Active (Version 1.2.1)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -31,6 +31,34 @@ Empty argv means **install-ensure** for three detect cases:
 
 **Scope:** Empty-argv routing, detect cases (global / local / absent), messages, force boundary, exit status, interaction with TTY / quiet / json.  
 **Out of scope (own requirements):** Full command catalog (`requirement-shell-cli-interface.md`); download/checksum detail (`requirement-shell-automatic-checksum.md`); full self-update/uninstall lifecycle (`requirement-shell-self-management.md`); output function catalog (`requirement-shell-output-requirements.md`); general idempotency matrix beyond empty-argv rows (`requirement-shell-idempotency.md`).
+
+### 1.1 Human-facing
+
+**In one sentence:** If you run `selfmanaged` with **no arguments at all** (the advertised `curl … | sh` one-liner), the program **must place itself or confirm it is already installed** — it must not print help.
+
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | First-time install or a healthy re-run of the one-liner | `curl -fsSL …/selfmanaged \| /bin/sh` |
+| The other role | Explicit verbs: help, force reinstall, uninstall | `selfmanaged help` · `selfmanaged install --force` |
+| Not this file | Full command list, checksum, update/uninstall, output printers | `requirement-shell-cli-interface.md` and peers |
+
+| Includes | Excludes |
+|----------|----------|
+| Zero tokens (`$# -eq 0`): pipe one-liner, `./selfmanaged` with nothing after the name | `selfmanaged --json` / `selfmanaged --quiet` (those have argv; default command stays help unless you also pass `install`) |
+| Not installed / already in user bin / already in system bin | Domain setup, host packages, dedicated-account ops |
+
+| Surface | What you open | What for |
+|---------|---------------|----------|
+| `./selfmanaged` | Program file people install | Live empty-argv behavior |
+| `selfmanaged` with no args | Command | Install-ensure |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| First install from the internet | No program is on disk yet. The pipe has no human to answer a question, so the tool **places itself** (user bin for a normal login; system bin if you already ran as root). Failure must be a real error, not a fake success. | `curl -fsSL https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged \| /bin/sh` |
+| Run it again when it is already installed | Same one-liner **must succeed and say it is already installed**. It must not dump help and must not require `--force`. | `selfmanaged` (no arguments) |
+| Quiet or JSON with **no arguments** | No yes/no question. The tool still **places** the program (or no-ops if already installed). A helper that returns success without placing is a defect. | Environment already `JSON=1` or `QUIET=1`, then `selfmanaged` with empty argv — **not** `selfmanaged --json` alone |
+
+Jargon: **Type O** (letter) means “no arguments = install-ensure.” That is **not** Type **0** (digit: you run as yourself).
 
 ---
 
@@ -64,6 +92,7 @@ When this product is used as **bootstrap origin A** for a specialized product **
 |------|------|----------|
 | Empty argv on B | Keep **Type O install-ensure** (or document a product-type change with authorized REQ) | Hijack empty argv for domain full-setup / host mutation |
 | Domain setup verb | Use an explicit command (e.g. `run`, `setup`, domain verb catalog) | Treat bare `curl \| sh` / empty argv as host domain install |
+| Case A helper | If B copies `inst_maybe_install` as first-install SSOT, quiet/json **MUST** call `inst_perform_install` and return its status | Copy a helper that `return 0` under quiet/json without placing the binary |
 | Tests | Isolate `HOME`, `USER_BIN`, and **`GLOBAL_BIN`** so host `/usr/local/bin/${APP_NAME}` does not shadow lifecycle CI | Assume empty `HOME` alone hides a real global install |
 
 **Rationale:** Specializees that rebind empty argv to interactive host setup break the online-install contract and confuse install-ensure with domain ops. Host-mutating domain work belongs under explicit verbs with privilege gates (see CLI interface specializee contract).
@@ -86,12 +115,23 @@ When this product is used as **bootstrap origin A** for a specialized product **
 
 ### 2.4 Case A — not installed (modes)
 
-| Mode | Required empty-argv behavior |
-|------|------------------------------|
-| **Interactive** (TTY stdin+stdout, not quiet/json) | `inst_maybe_install`: note + `prompt_yes_no`; yes → `inst_perform_install`; no → skip without help dump |
-| **Non-interactive** (non-TTY / `curl \| sh`) | Auto-install message + `inst_perform_install` (via `inst_maybe_install` non-TTY branch) |
-| **Quiet or JSON** | `inst_perform_install` directly (no prompt) |
-| **Failure** (network, checksum, I/O) | Non-zero exit; no fake success; no help-only output |
+When **no managed binary** is present, empty argv **MUST** place the program (or fail closed). People picture:
+
+| Mode | What a person sees | What MUST happen |
+|------|--------------------|------------------|
+| **Interactive** (real terminal on stdin+stdout, not quiet/json) | A short note and a yes/no question | Yes → `inst_perform_install`; no → skip **without** dumping help |
+| **Non-interactive** (no terminal / `curl \| sh`) | An auto-install message | Place the program (`inst_maybe_install` non-TTY branch → `inst_perform_install`) |
+| **Quiet or JSON** | No question | `inst_perform_install` (no prompt). Failure **MUST** be non-zero. **MUST NOT** return success without placing. |
+| **Failure** (network, checksum, I/O) | An error | Non-zero exit; no fake success; no help-only output |
+
+**Dispatcher vs helper (same outcome):**
+
+| Path | Quiet / JSON, not installed | Human TTY, not installed | Pipe, not installed |
+|------|-----------------------------|--------------------------|---------------------|
+| `app_main` empty argv | **MUST** call `inst_perform_install` directly | **MAY** call `inst_maybe_install` | **MUST** auto-install (helper non-TTY branch or direct place) |
+| `inst_maybe_install` itself | **MUST** call `inst_perform_install` and return its status. **MUST NOT** `return 0` without placing | Note + `prompt_yes_no` | Auto-install message + place |
+
+Empty-argv quiet/json in `app_main` is **not** a license for the helper to no-op. Products copied from this bootstrap that route Case A **only** through the helper **MUST** still place the binary under quiet/json.
 
 **Placement privilege:**
 
@@ -116,7 +156,8 @@ When this product is used as **bootstrap origin A** for a specialized product **
 3. Require `--force` solely because detect says installed.  
 4. Blind re-download every empty-argv run without force.  
 5. Basename-gate main so `curl \| sh` never hits the empty-argv branch.  
-6. Detect only one of global/local incorrectly so a present local install is treated as Case A (or the reverse) contrary to `inst_*` SSOT.
+6. Detect only one of global/local incorrectly so a present local install is treated as Case A (or the reverse) contrary to `inst_*` SSOT.  
+7. Silent success from `inst_maybe_install` under quiet/json when Case A should place the binary.
 
 ### 2.7 Implementation Notes (this project)
 
@@ -127,14 +168,14 @@ When this product is used as **bootstrap origin A** for a specialized product **
 | **Ship unit** | Repo root `./selfmanaged` |
 | **Dispatcher** | `app_main` — empty-argv block **before** flag/command parse default help |
 | **Install ensure** | `inst_perform_install` (quiet/json and already-installed no-op) |
-| **Friendly first install** | `inst_maybe_install` (TTY confirm / non-TTY auto) when not installed and not quiet/json |
+| **Friendly first install** | `inst_maybe_install` (TTY confirm / non-TTY auto) when not installed and not quiet/json. **Gap (SM-BUG-01):** live helper still `return 0` under quiet/json without placing; dispatcher currently bypasses that path for empty argv. |
 | **Detect SSOT** | `inst_is_installed` ← `inst_get_version` |
 | **Global path** | `GLOBAL_BIN` default `/usr/local/bin` |
 | **Local path** | `USER_BIN` default `${HOME}/.local/bin` |
 | **Force wiring** | `--force` → `FORCE=1` and `FORCE_REINSTALL=1` in `app_main` |
 | **Output SSOT** | `out_success` / `out_info` / `out_json` / errors via `out_*` |
 | **Channel** | `SCRIPT_URL` (compose from `REPO_USER` / `REPO_NAME` / `APP_NAME`) for download path inside install |
-| **Tests** | `tests/test_cli.sh` (Case A failure when not installed); `tests/test_install_lifecycle.sh` (Case B local + Case C global already-installed → not help) |
+| **Tests** | `tests/test_cli.sh` (Case A failure when not installed); `tests/test_install_lifecycle.sh` (Case B local + Case C global already-installed → not help). **Gap:** no suite row yet that invokes `inst_maybe_install` itself under `QUIET=1` / `JSON=1` when not installed (`TP-INST-MAYBE-01`). |
 
 #### Dispatcher algorithm (normative sketch)
 
@@ -142,13 +183,15 @@ When this product is used as **bootstrap origin A** for a specialized product **
 app_main:
   if [ $# -eq 0 ]; then
     if JSON or QUIET:
-      inst_perform_install; exit $?
+      inst_perform_install; exit $?   # Case A/B/C; no prompt
     elif inst_is_installed:
       inst_perform_install   # Case B/C success no-op
       exit $?
     else
-      inst_maybe_install     # Case A
+      inst_maybe_install     # Case A (TTY confirm / pipe auto)
       exit $?
+    # inst_maybe_install MUST still place if JSON/QUIET ever reaches it
+    # (defense in depth; specializee copy of the helper)
     fi
   fi
   # else parse flags/commands; default COMMAND=help only when argv non-empty and command is help/absent token rules
@@ -194,7 +237,9 @@ app_main:
 6. Exit 0 with no install and no already-installed acknowledgment when detect says installed.  
 7. Reintroduce a basename-only gate that skips `app_main` under `curl \| sh`.  
 8. Bypass `out_*` for empty-argv user messages.  
-9. Contradict this file in peer requirements by documenting “already installed → help” as normative empty-argv behavior.
+9. Contradict this file in peer requirements by documenting “already installed → help” as normative empty-argv behavior.  
+10. Let `inst_maybe_install` return success under quiet/json when Case A should place the binary (silent skip). Empty-argv bypass in `app_main` does **not** excuse a helper that no-ops.  
+11. Copy this helper into a specialized product as Case A SSOT while keeping a quiet/json `return 0` without `inst_perform_install`.
 
 **Violating this rule is a critical zero-arg / online-install regression.**
 
@@ -204,7 +249,7 @@ app_main:
 
 This requirement is satisfied when all of the following hold:
 
-1. Empty argv + not installed → Case A install path (TTY may confirm; non-TTY / quiet / json auto).  
+1. Empty argv + not installed → Case A install path (TTY may confirm; non-TTY / quiet / json auto). Quiet/json through the helper **MUST** place or fail closed — not `return 0` without install.  
 2. Empty argv + local install present + force off → already-installed success; not help; no re-download.  
 3. Empty argv + global install present + force off → already-installed success; not help; no re-download.  
 4. Empty argv + install failure → non-zero exit.  
@@ -240,7 +285,7 @@ This requirement is satisfied when all of the following hold:
 
 ---
 
-**Last Updated**: 2026-07-19  
+**Last Updated**: 2026-09-02  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 6, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).
 

@@ -4,7 +4,7 @@
 **Class:** Bootstrap project — no Active domain requirements expected.  
 **Always load first:** `reviews/lessons.md`
 
-**Last plan update:** 2026-08-11 (1.2.2 specializee contract + GLOBAL_BIN isolation; see `revision-plan.md`)
+**Last plan update:** 2026-09-02 (SM-BUG-01 helper quiet/json; §1.1 on all REQs)
 
 ---
 
@@ -45,6 +45,7 @@
 |--------------|------|-----------|
 | `app_main "$@"` entry (end of file) | Basename gate under pipe | L-BOOT-01 |
 | Empty argv branch | Help instead of install-ensure | L-TYPEO-01 |
+| `inst_maybe_install` quiet/json | Success without placing when not installed | L-INST-MAYBE-01, SM-BUG-01 |
 | `util_resolve_storage` | Dead code; tiers 1–2 no create; unused in main | L-STOR-01, SM-STOR-01 |
 | Install / self-update integrity | Companion vs pin trust bounds | L-CSUM-01, SM-SEC-01 |
 | `self-uninstall` non-force | Fake JSON success cancel | L-UNIN-01 |

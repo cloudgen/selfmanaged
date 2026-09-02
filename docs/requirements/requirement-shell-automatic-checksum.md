@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-automatic-checksum.md  
-**Status**: Active (Version 1.0.0)  
+**Status**: Active (Version 1.0.1)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -10,6 +10,31 @@ This requirement is the **project Single Source of Truth** for **automatic compa
 **Out of scope (cited, not re-owned):** Full install one-liner / bootstrap (`requirement-shell-cli-interface.md`, online-install patterns in self-management); full self-update semver gates (`requirement-shell-self-management.md`); full `out_*` catalog (`requirement-shell-output-requirements.md`); package-manager signatures / cosign (not claimed here).
 
 **Must not confuse with:** Embedding a hash of `./selfmanaged` *inside* `./selfmanaged`; requiring operators to set `CHECKSUM` for every install; claiming independent host authenticity from same-channel SHA-256 alone.
+
+### 1.1 Human-facing
+
+**In one sentence:** When the tool downloads itself, it also fetches a **sidecar checksum file**, checks the bytes, and **tells you** the link, the expected value, and whether the check passed — it does not hide that work, and it does not pretend the checksum is a vendor signature.
+
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | Someone installing or updating from the channel | `curl … \| sh` · `selfmanaged self-update` |
+| The other role | Optional extra pin (`CHECKSUM=…`) for a stricter lock | Env pin, not the everyday path |
+| Not this file | Help/about must **not** advertise `CHECKSUM`; install routing lives elsewhere | `requirement-shell-cli-interface.md` |
+
+| Includes | Excludes |
+|----------|----------|
+| Companion `.sha256` next to the download URL; transparent pass/fail | Cosign / package-manager signatures (not claimed) |
+| Publisher ships `selfmanaged.sha256` beside the program | Embedding the hash *inside* the program file |
+
+| Surface | What you open | What for |
+|---------|---------------|----------|
+| `./selfmanaged.sha256` | Companion digest | Publisher sidecar |
+| Install / self-update output | Messages | Link, value, result |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| Install from the channel | The tool downloads the program **and** the sidecar, then reports whether the bytes matched. A mismatch **must fail**. | `curl -fsSL …/selfmanaged \| /bin/sh` |
+| Read help | Help and about **must not** tell people to set `CHECKSUM`. | `selfmanaged help` |
 
 ---
 
@@ -224,6 +249,6 @@ Integrity work for selfmanaged is **not done** if any of the following fail:
 
 ---
 
-**Last Updated**: 2026-07-19  
+**Last Updated**: 2026-09-02  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

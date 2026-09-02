@@ -85,6 +85,14 @@ __pycache__/
 # --- Shell / local run debris ---
 *.YYYYMMDD-*.bak
 
+# --- Harness transfer safety backups (H1/H2; not payload) ---
+.harness-transfer-bak-*/
+.harness-sync-*-bak-*/
+.harness-*-bak-*/
+.harness-backup-*/
+.h1-backup-*/
+.h2-backup-*/
+
 # --- Agent contract (local workspace) ---
 AGENTS.md
 

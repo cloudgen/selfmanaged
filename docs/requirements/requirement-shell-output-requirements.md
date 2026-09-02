@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-output-requirements.md  
-**Status**: Active (Version 1.0.0)  
+**Status**: Active (Version 1.0.1)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -10,6 +10,31 @@ It defines the centralized output system and stdout/stderr channel contracts for
 
 **Scope:** Central `out_*` system, mode contracts, channel rules, JSON purity, quiet filtering, TTY colors, fatal error emission.  
 **Out of scope (cited, not re-owned):** Command catalog (`requirement-shell-cli-interface.md`); self-management semantics; modular prefix table (except that output owns `out_*`); interactive prompt logic beyond prompt output hooks.
+
+### 1.1 Human-facing
+
+**In one sentence:** Everything the tool **says** to a person or a machine goes through **one printer family** (`out_*`): ordinary text on a terminal, silence under `--quiet` except errors, one JSON object under `--json`, and fatal errors that still tell you **what happened** and **what to type next**.
+
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | Reading the terminal or parsing JSON | `selfmanaged version` vs `selfmanaged --json version` |
+| The other role | Automation that must not see banners mixed into JSON | `--json` on stdout; errors still visible |
+| Not this file | Whether to ask a yes/no; whether empty argv installs | Interactive + zero-arguments peers |
+
+| Includes | Excludes |
+|----------|----------|
+| stdout vs stderr split; quiet; JSON purity; colors only on a real terminal | Command meaning; checksum algorithm |
+| Blocking errors a person can act on | Raw `echo` / `printf` for product messages |
+
+| Surface | What you open | What for |
+|---------|---------------|----------|
+| `selfmanaged --json about` | Command | One JSON object |
+| `./selfmanaged` | Program file | `out_*` helpers |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| Read as a person | Colored `[OK]` / `[ERROR]` on a terminal; `--quiet` hides chatter but **not** fatals. | `selfmanaged about` |
+| Read as a machine | Exactly one JSON object on stdout; no human banners. | `selfmanaged --json about` |
 
 ---
 
@@ -255,6 +280,6 @@ Output-related work for selfmanaged is **not done** if any of the following fail
 
 ---
 
-**Last Updated**: 2026-07-19 (printf exception classes §2.1.1)  
+**Last Updated**: 2026-09-02 (§1.1 Human-facing; printf exception classes §2.1.1)  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-interactive-vs-noninteractive.md  
-**Status**: Active (Version 1.0.0)  
+**Status**: Active (Version 1.1.0)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -10,6 +10,34 @@ It defines interactive vs non-interactive behavior for this shell project (globa
 
 **Scope:** Mode detection signals, prompt policy, auto-install vs confirm, force/skip rules, interaction with quiet/json/debug and output SSOT.  
 **Out of scope (cited, not re-owned):** Full command catalog (`requirement-shell-cli-interface.md`); output function catalog (`requirement-shell-output-requirements.md`); self-update integrity (`requirement-shell-self-management.md`); idempotency matrix (`requirement-shell-idempotency.md`).
+
+### 1.1 Human-facing
+
+**In one sentence:** On a real terminal the tool may **ask** before first install or uninstall; under a pipe, CI, `--quiet`, or `--json` it **must never wait for a key** — first install still **places** the program; uninstall without `--force` **must stop**.
+
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | A person at a terminal, or a script / `curl \| sh` with nobody to answer | `selfmanaged` on a TTY vs `curl … \| sh` |
+| The other role | Machine flags (`--json`, `--quiet`) and `--force` for deliberate uninstall | `selfmanaged --json version` · `selfmanaged --force self-uninstall` |
+| Not this file | Empty-argv case table (peer); `out_*` printers; command catalog | `requirement-shell-cli-zero-arguments.md` |
+
+| Includes | Excludes |
+|----------|----------|
+| When to ask vs auto-install vs refuse uninstall | Inventing a second “are we interactive?” check inside every helper |
+| `prompt_yes_no` / `prompt_ask` as the only confirm/read path | Raw `read` in command bodies |
+
+| Surface | What you open | What for |
+|---------|---------------|----------|
+| `./selfmanaged` | Program file | `TTY` at startup; `prompt_*`; `inst_maybe_install` |
+| `selfmanaged --quiet` / `--json` | Flags | No prompts; first install must still place |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| Install from a pipe | Nobody can type yes. The tool **places** the program and prints a short auto-install note. | `curl -fsSL …/selfmanaged \| /bin/sh` |
+| First install on a real terminal | The tool **asks** once. Yes places; no skips without dumping help. | `selfmanaged` (no args, terminal) |
+| Uninstall without `--force` off a terminal | The tool **must not** delete. JSON says confirm is required. | `selfmanaged --json self-uninstall` |
+
+Jargon: a **TTY** here means “this login has a real terminal on stdin and stdout.” Measure that **once** at startup (`TTY`); helpers **read `TTY`**.
 
 ---
 
@@ -28,7 +56,7 @@ For shell CLIs without a separate Config class, the **mode SSOT** is the **globa
 
 | Signal | Variable / check | Meaning |
 |--------|------------------|---------|
-| TTY | `TTY=1` when stdin and stdout are terminals; also live `[ -t 0 ]` / `[ -t 1 ]` in prompt helpers | Interactive UX possible |
+| TTY | `TTY=1` when stdin and stdout are terminals. Measure `[ -t 0 ]` and `[ -t 1 ]` **once in the main process, outside functions** (near Config). Helpers **read `TTY`**. **MUST NOT** use a second live `[ -t` inside a function as the sole “may we prompt?” gate. | Interactive UX possible |
 | Quiet | `QUIET=1` (`--quiet` / `-q`) | Suppress non-essential human chatter |
 | JSON | `JSON=1` (`--json`; implies quiet) | Machine output; no human hang; no human banners |
 | Debug | `DEBUG=1` (`--debug`) | Extra stderr diagnostics; suppressed under JSON |
@@ -40,7 +68,7 @@ For shell CLIs without a separate Config class, the **mode SSOT** is the **globa
 1. Prompt, color, and hang-sensitive decisions **MUST** respect these globals and/or the shared `prompt_*` helpers—not ad-hoc `read` scattered in domain logic.  
 2. After global flags are parsed in `app_main`, subsequent code **MUST** see the updated `QUIET` / `JSON` / `FORCE` / `DEBUG` values.  
 3. Do **not** invent a second parallel mode system in individual commands.  
-4. Direct `[ -t … ]` checks **inside** `prompt_*` and carefully documented install helpers are allowed as part of the mode SSOT implementation; command business logic **SHOULD** call `prompt_*` instead of re-implementing prompt guards.
+4. Helpers (`prompt_*`, `inst_maybe_install`, `out_*` color) **MUST** consume process `TTY`. Command business logic **MUST** call `prompt_*` instead of re-implementing prompt guards. A `--file` vs stdin probe **MAY** read current `[ -t 0 ]` only when named as a data-source check — **not** as interactive-capability SSOT.
 
 ```text
 flags + TTY / environment
@@ -121,7 +149,7 @@ interactive   non-interactive
 
 | Command / path | Interactive (TTY, not quiet/json) | Non-interactive / quiet / json |
 |----------------|-----------------------------------|--------------------------------|
-| Zero-arg, **not** installed (**Type O**) | `inst_maybe_install`: show note + `prompt_yes_no` install confirm | Auto path: quiet/json zero-arg → `inst_perform_install` without prompt; non-TTY human path → auto-install message + install |
+| Zero-arg, **not** installed (letter **O**: no-args = install-ensure) | `inst_maybe_install`: show note + `prompt_yes_no` install confirm | Quiet/json: `inst_perform_install` without prompt (dispatcher **and** helper). Non-TTY human path: auto-install message + install |
 | Zero-arg, **already** installed local or global (**Type O**) | `inst_perform_install` success no-op (“already installed”); **not** help; no re-download without force | Same (quiet/json: structured success no-op) |
 | `install` | Install with human `out_*` messages | No prompt; honor force for reinstall; JSON structured results |
 | `self-uninstall` | `prompt_yes_no` unless `--force` | Without force: fail closed with explicit “requires --force” (JSON: `out_json_error` / `confirm_required`); never pretend user cancelled; with `--force`: remove without confirm |
@@ -134,29 +162,71 @@ interactive   non-interactive
 | Condition | Behavior |
 |-----------|----------|
 | `JSON=1` or `QUIET=1` | Return **1** (no / cancel)—never `read` |
-| Not a TTY on stdin or stdout | Return **1** (no)—never `read` |
-| TTY + interactive | Prompt via `out_msg_n`; yes → 0, else → 1 |
-| Uninstall without force + non-TTY | Confirm fails → uninstall cancelled (safe default) |
+| `TTY` is not `1` | Return **1** (no)—never `read` |
+| `TTY=1` and not quiet/json | Prompt via `out_msg_n`; yes → 0, else → 1 |
+| Uninstall without force + non-interactive | Confirm fails → uninstall cancelled (safe default) |
 | Uninstall with `--force` | Skip confirm entirely |
+
+Sample (consume `TTY`; never live `[ -t` as the gate):
+
+```sh
+prompt_yes_no() {
+    : "${JSON:=0}" : "${QUIET:=0}" : "${TTY:=0}"
+    if [ "${JSON}" -eq 1 ] || [ "${QUIET}" -eq 1 ]; then
+        return 1
+    fi
+    if [ "${TTY}" -ne 1 ]; then
+        return 1
+    fi
+    out_msg_n "${1} (y/N)? "
+    read -r answer || true
+    case "${answer}" in
+        [Yy]*) return 0 ;;
+        *)     return 1 ;;
+    esac
+}
+```
 
 #### `prompt_ask` contract (this project)
 
 | Condition | Behavior |
 |-----------|----------|
 | `JSON=1` or `QUIET=1` | Return **default** without `read` |
-| Not a TTY (and `INTERACTIVE` ≠ 1) | Return **default** without `read` |
-| TTY interactive | Show current/default via `out_*`, then `read` |
+| `TTY` is not `1` (and `INTERACTIVE` ≠ 1) | Return **default** without `read` |
+| `TTY=1` interactive | Show current/default via `out_*`, then `read` |
+
+Sample (consume `TTY`):
+
+```sh
+prompt_ask() {
+    : "${JSON:=0}" : "${QUIET:=0}" : "${TTY:=0}" : "${INTERACTIVE:=0}"
+    message="${1-}"; default="${2-}"
+    if [ "${JSON}" -eq 1 ] || [ "${QUIET}" -eq 1 ]; then
+        printf '%s' "${default}"
+        return 0
+    fi
+    if [ "${TTY}" -ne 1 ] && [ "${INTERACTIVE}" -ne 1 ]; then
+        printf '%s' "${default}"
+        return 0
+    fi
+    out_msg_n "${message}: "
+    read -r answer || true
+    [ -z "${answer}" ] && printf '%s' "${default}" || printf '%s' "${answer}"
+}
+```
 
 #### `inst_maybe_install` contract (this project)
 
 | Condition | Behavior |
 |-----------|----------|
-| Already installed (force off) | No-op success |
-| Quiet or JSON | No prompt; return without installing from this helper (zero-arg quiet/json uses `inst_perform_install` in `app_main` instead) |
-| TTY interactive | Prompt install yes/no |
-| Non-TTY (pipe / automation) | **Auto-install** with clear human message when not quiet/json |
+| Already installed (force off) | Success no-op; do not ask again |
+| Quiet or JSON | **No prompt.** **MUST** call `inst_perform_install` and return its status. **MUST NOT** `return 0` without placing (unless already-installed no-op). Empty-argv quiet/json in `app_main` also calls `inst_perform_install` directly — **both** paths **MUST** place. Copied products **MUST NOT** keep a helper that skips install under quiet/json. |
+| `TTY=1` interactive (not quiet/json) | Prompt install yes/no via `prompt_yes_no` |
+| Non-TTY (pipe / automation) | **Auto-install** with a clear human message when not quiet/json |
 
-This dual policy is intentional: **pipe install proceeds**; **destructive uninstall does not** without `--force`.
+This dual policy is intentional: **pipe / quiet / json first-install proceeds**; **destructive uninstall does not** without `--force`.
+
+**Honesty (this ship unit, 2026-09-02):** `prompt_yes_no`, `prompt_ask`, and `inst_maybe_install` still re-test `[ -t 0 ] && [ -t 1 ]`. `inst_maybe_install` still `return 0` under quiet/json without placing. Those are **Gaps** (this file is law; `./selfmanaged` has not yet been patched). Empty-argv quiet/json currently works because `app_main` calls `inst_perform_install` first.
 
 ### 2.6 Why This Requirement Exists (Direct CIAO Alignment)
 
@@ -191,7 +261,9 @@ This dual policy is intentional: **pipe install proceeds**; **destructive uninst
 6. Remove the zero-arg non-TTY auto-install path for classic `curl | sh` without an explicit requirement change.  
 7. Bypass `out_*` for prompt text (raw `echo`/`printf` user messages).  
 8. Scatter ad-hoc TTY/mode logic that contradicts the global flag SSOT and `prompt_*` contracts.  
-9. Hardcode project-specific secrets or release URLs into prompt strings.
+9. Hardcode project-specific secrets or release URLs into prompt strings.  
+10. Let `inst_maybe_install` return success under `--quiet` / `--json` without calling `inst_perform_install` when the program is not installed.  
+11. Re-test `[ -t 0 ]` / `[ -t 1 ]` inside helpers as the sole interactive gate; helpers **MUST** consume process `TTY`.
 
 **Supporting non-interactive environments cleanly is mandatory for CIAO compliance.**
 
@@ -203,7 +275,7 @@ Mode-related work for selfmanaged is **not done** if any of the following fail:
 
 1. No code path blocks on `read` under `--json`, `--quiet`, or non-TTY (except documented `INTERACTIVE=1` value prompt).  
 2. Destructive uninstall without `--force` does not silently proceed in non-interactive mode.  
-3. Zero-arg install-ensure supports automation (`curl | sh` / quiet/json): not-installed installs; already-installed (local or global) success no-op without help (`requirement-shell-cli-zero-arguments.md`).  
+3. Zero-arg install-ensure supports automation (`curl | sh` / quiet/json): not-installed installs; already-installed (local or global) success no-op without help (`requirement-shell-cli-zero-arguments.md`). Quiet/json through `inst_maybe_install` **MUST** place or fail closed.  
 4. All confirms go through `prompt_yes_no`.  
 5. Colors only when TTY and not quiet/json.  
 6. JSON/human contracts remain aligned with `requirement-shell-output-requirements.md`.  
@@ -225,6 +297,6 @@ Mode-related work for selfmanaged is **not done** if any of the following fail:
 
 ---
 
-**Last Updated**: 2026-07-19  
+**Last Updated**: 2026-09-02  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

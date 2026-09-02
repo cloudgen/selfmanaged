@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-class-software-dev.md  
-**Status**: Active (Version 1.0.0 – selfmanaged class law + residual stack)  
+**Status**: Active (Version 1.0.1 – selfmanaged class law + residual stack)  
 **Area**: class  
 **Key**: `requirement-class-software-dev`  
 **Philosophy**: CIAO **v2.10.2** / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered / Over-protect)
@@ -9,6 +9,31 @@
 Declare this workspace as a **software-development** project class and hold the **residual collection** of software-engineering stack facts **not already owned** by more specific Active `requirement-shell-*.md` peers: primary language, toolchain policy, package/test tooling, and runtime OS family.
 
 This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycle, checksum, output, or storage tables (those stay on peer shell requirements).
+
+### 1.1 Human-facing
+
+**In one sentence:** This folder’s **project nature** is **software-development**: we write a POSIX `/bin/sh` program people can install (`./selfmanaged`), not a blank starter kit and not a server-maintenance allowlist.
+
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | Someone building or installing this CLI | Ship unit `./selfmanaged` + `tests/run.sh` |
+| The other role | A genesis seed (empty law) or a server-maintenance tree (host allowlists) | Those are **not** this workspace |
+| Not this file | Install, help, checksum, storage — peer shell requirements own those tables | `requirement-shell-cli-interface.md` and peers |
+
+| Includes | Excludes |
+|----------|----------|
+| Language and toolchain leftovers nobody else owns (`posix-sh`, no package tool) | A second copy of install / output / checksum law |
+| Honest “none” when a topic is considered and not used | Inventing a dedicated-account approver this product does not have |
+
+| Surface | What you open | What for |
+|---------|---------------|----------|
+| `./selfmanaged` | Program file people install | Live stack (POSIX `/bin/sh`) |
+| This file | Class + residual notes | What kind of work this folder is |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| Confirm the stack | Primary language is POSIX `/bin/sh`. There is no `package.json` / compiler. Tests are shell. | `./tests/run.sh` |
+| Look for install rules | They live on the empty-argv and CLI-interface requirements, not here. | Read those peer files; run `selfmanaged help` |
 
 ---
 
@@ -103,6 +128,8 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 | Interactive vs non-interactive | `requirement-shell-interactive-vs-noninteractive` | Do not duplicate |
 | Modular prefixes / single-file layout | `requirement-shell-modular-function-design` | Do not duplicate |
 | Domain features / help / about extras | *none* (bootstrap — no domain SSOT) | Add `requirement-domain-*` only when domain ops exist |
+| Coding-style related REQ | *none* (**Gap**) | Portable shell-coding lessons arrive **raw** until a language-matched coding-style requirement is specialized |
+| Actor / role / subject / approver | *none* (considered — **no dest approver**) | Bootstrap self-install CLI; no dest review machine |
 
 ---
 
@@ -180,6 +207,6 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 
 ---
 
-**Last Updated**: 2026-07-19  
+**Last Updated**: 2026-09-02  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 4, 5, 20, 21 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

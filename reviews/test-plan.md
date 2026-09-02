@@ -2,7 +2,7 @@
 
 Maps **baseline coverage** and **finding lock-in (TP-*)** to `tests/`.  
 **Suite entry:** `./tests/run.sh`  
-**Last update:** 2026-08-11 (1.2.2 GLOBAL_BIN isolation; specializee porting notes)
+**Last update:** 2026-09-02 (TP-INST-MAYBE-01 helper quiet/json Case A)
 
 Status: **have** = automated today · **TODO** = needed · **n/a** = not applicable / product choice
 
@@ -50,6 +50,7 @@ Status: **have** = automated today · **TODO** = needed · **n/a** = not applica
 | TP-CITE-TERM-01 | L-CITE-TERM-01 | Bootstrap footer cites requirements | **have** | static fix |
 | TP-JSON-RAW-01 | L-JSON-RAW-01, SM-PLAN-01 | `out_json` `@key` raw nested | **TODO** (impl present) | Code has `@*` branch; no suite assertion yet — mark **have** only after test or reclassify n/a |
 | TP-ISO-GLOBAL-01 | SM-REV-01 / gitlab-nginx specialize | Isolated GLOBAL_BIN for lifecycle | **have** | helpers + lifecycle/cli env |
+| TP-INST-MAYBE-01 | SM-BUG-01, L-INST-MAYBE-01 | Not installed + QUIET/JSON **through `inst_maybe_install`** must place or fail closed (not `return 0` skip) | **TODO** | Dispatcher empty-argv bypass is not this row; invoke the helper |
 
 ---
 

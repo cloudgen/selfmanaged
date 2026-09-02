@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-cli-storage.md  
-**Status**: Active (Version 1.0.0 – selfmanaged storage wire)  
+**Status**: Active (Version 1.0.1 – selfmanaged storage wire)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered / Over-protect)
 
 ## 1. Purpose
@@ -8,6 +8,30 @@ This requirement is the **project Single Source of Truth** for **shell CLI stora
 
 **Scope:** Resolve priority chain; isolation; `util_resolve_storage` contract; `EFFECTIVE_STORAGE_DIR` / `TMPDIR` export; about human + JSON fields.  
 **Out of scope (cited, not re-owned):** Binary install paths (`USER_BIN` / `GLOBAL_BIN`); domain project trees (none on this bootstrap product); companion checksum; PATH shell-rc.
+
+### 1.1 Human-facing
+
+**In one sentence:** Scratch and cache for this run live in **one per-user folder** the tool picks (RAM disk if it can, then `/tmp`, then a cache under your home) — not a shared dump that mixes you with someone else.
+
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | The Unix login running the CLI | `selfmanaged about` shows the chosen folder |
+| The other role | Another login on the same host | Their cache **must not** be this login’s folder |
+| Not this file | Where the **program binary** is installed (`~/.local/bin` vs `/usr/local/bin`) | Install-path law on zero-arguments / self-management |
+
+| Includes | Excludes |
+|----------|----------|
+| One resolver; `about` fields for the chosen path | Domain project trees (this bootstrap has none) |
+| Temp downloads under that root | Hard-coded `/tmp/selfmanaged` dumps |
+
+| Surface | What you open | What for |
+|---------|---------------|----------|
+| `selfmanaged about` | Command | Human + JSON storage fields |
+| `./selfmanaged` | Program file | `util_resolve_storage` |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| See where scratch went | About names the effective folder and the persistent cache fallback. Two logins must not share one directory. | `selfmanaged about` · `selfmanaged --json about` |
 
 ---
 
@@ -118,6 +142,6 @@ Storage resolve work for selfmanaged is **not done** if any of the following fai
 
 ---
 
-**Last Updated**: 2026-07-19  
+**Last Updated**: 2026-09-02  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 4, 5, 11, 19, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

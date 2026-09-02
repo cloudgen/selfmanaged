@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- Every registered requirement now has a **§1.1 Human-facing** block (who / what happens / what you type).
+- First-install helper law: under quiet/JSON, `inst_maybe_install` **must place** the program (same as empty-argv Case A). Live `./selfmanaged` still returns success without placing — **SM-BUG-01** open.
+
+### Added
+
+- Review report `reviews/reports/2026-09-02-bug-inst-maybe-install-quiet-json-skip.md`; lesson `L-INST-MAYBE-01`; test-plan row `TP-INST-MAYBE-01`.
+- `.gitignore` entries for harness transfer safety backups (`.h1-backup-*` / `.h2-backup-*` / `.harness-*-bak-*`).
+
 ## [1.2.2] - 2026-08-11
 
 ### Added

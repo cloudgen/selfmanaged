@@ -1,7 +1,7 @@
 # Reviews index — selfmanaged
 
 **Registry** of review plan artifacts and run reports. Keep rows in sync with disk.  
-**Updated:** 2026-08-11 (1.2.2 specializee contract + GLOBAL_BIN isolation)
+**Updated:** 2026-09-02 (SM-BUG-01 recast; REQ §1.1 + helper-contract align)
 
 ## Plan artifacts
 
@@ -24,11 +24,13 @@
 | 2026-07-16 | `reports/2026-07-16-plan-and-product-review.md` | Plan review + full Type 0 re-check | PASS=102 FAIL=0 | **Pass with nits** |
 | 2026-07-19 | `reports/2026-07-19-selfmanaged-product-review.md` | Full Type 0 + class gate + ops SSH | PASS=102 FAIL=0 | **Pass with nits** |
 | 2026-08-11 | `reports/2026-08-11-selfmanaged-specializee-revision.md` | GLOBAL_BIN tests + specializee contract + anchors | PASS=102 FAIL=0 | **Pass** (1.2.2) |
+| 2026-09-02 | `reports/2026-09-02-bug-inst-maybe-install-quiet-json-skip.md` | Helper quiet/json skip; REQ coverage + human-facing | — | **Open bug** (law aligned; code Gap) |
 
 ## Open items summary
 
 | ID | Severity | Status | One-line |
 |----|----------|--------|----------|
+| SM-BUG-01 | P1 (specializee / helper SSOT) | **open** | Helper quiet/json returns 0 without placing; origin A one-liner still works via dispatcher |
 | SM-PLAN-01 | P3 | open | TP-JSON-RAW-01 suite lock-in still **TODO** |
 | SM-REV-05 | P3 | open | Lesson: no bulk-sed of CIAO org URLs when retargeting REQs |
 | SM-OPS-SSH-01 | P2 | **closed** (1.2.1) | cloudgen profile activated to default `~/.ssh`; GitHub `Hi cloudgen!` |

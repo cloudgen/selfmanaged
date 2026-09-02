@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-idempotency.md  
-**Status**: Active (Version 1.0.0)  
+**Status**: Active (Version 1.0.1)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -12,6 +12,31 @@ It defines re-run safety for ensure-style shell lifecycle commands (install, PAT
 **Out of scope (cited, not re-owned):** Full CLI command table (`requirement-shell-cli-interface.md`); online-install digest algorithm detail; FSM continuous-tick design (no product FSM today).
 
 **Informal formula:** for ensure-style operation *f* and system state *x*, **f(f(x)) ≈ f(x)** for the **desired outcome** (logs and timestamps may differ).
+
+### 1.1 Human-facing
+
+**In one sentence:** Running install / update / PATH-ensure **again** must leave you in the **same good state** (already installed, already latest) — it must not pile up copies, require `--force` for a healthy re-run, or pretend uninstall deleted something that is still there.
+
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | Re-running the one-liner or `install` after success | Second `selfmanaged` with no args |
+| The other role | Deliberate replace (`--force`) or a real failure that must stay loud | `selfmanaged install --force` |
+| Not this file | Empty-argv Case A/B/C wording (peer); checksum algorithm | `requirement-shell-cli-zero-arguments.md` |
+
+| Includes | Excludes |
+|----------|----------|
+| Success no-op when the desired state is already true | Blind re-download on every empty-argv run |
+| Clean temps after a failed download so the next run can start | Silent “already ok” when the remote version cannot be read |
+
+| Surface | What you open | What for |
+|---------|---------------|----------|
+| `selfmanaged` (no args) | Command | Second run = already installed |
+| `selfmanaged self-update` | Command | Second run = already latest |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| Re-run the one-liner | If the program is already in user or system bin, you get **already installed**, not help and not a second download. | `selfmanaged` |
+| Force a replace | Only `--force` means “download again on purpose.” | `selfmanaged install --force` |
 
 ---
 
@@ -80,7 +105,7 @@ Force **MUST NOT** be used as a silent way to skip integrity verification.
 |----------------|---------------|--------------------------|-----------------|
 | `install` | Binary present at privilege-correct path | **Success no-op**; human: already installed; JSON success | `FORCE_REINSTALL=1` re-downloads/replaces |
 | Zero-arg install-ensure (**Type O**) | Binary present (local or global) | Second zero-arg when installed: **success no-op** “already installed” (not help, not reinstall) without force | Same force rules as install; see `requirement-shell-cli-zero-arguments.md` |
-| `inst_maybe_install` | Installed or user declined | Already installed → return success without re-prompt storm | — |
+| `inst_maybe_install` | Installed, user declined, **or** quiet/json Case A placed | Already installed → return success without re-prompt storm. Quiet/json when **not** installed **MUST** place (not a success skip). | — |
 | `self-update` | Local version equals remote (or newer under project policy) | **Success no-op** “already latest” when versions equal and force off | When versions differ, reinstall via install path; force may force reinstall; **must not silent-downgrade** without explicit force policy (see self-management term) |
 | `self-uninstall` | Binary absent | **Success no-op** “not installed / nothing to uninstall” | Force may skip interactive confirm only; still no over-delete |
 | `version-check` | N/A (read/compare) | Safe to re-run; network fetch each time is allowed; must not mutate install state | — |
@@ -171,6 +196,6 @@ A state-changing shell change for selfmanaged is **not done** if any of the foll
 
 ---
 
-**Last Updated**: 2026-07-19  
+**Last Updated**: 2026-09-02  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; related `requirement-shell-cli-interface.md`; CIAO Principles 1, 2, 3, 11, 12, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).
