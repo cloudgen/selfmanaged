@@ -138,7 +138,7 @@ Root may write global install path; non-root uses user path. Do not assume root 
 | **Uninstall steps** | `inst_self_uninstall_determine_bin` → `inst_self_uninstall_confirm_and_remove` → `inst_self_uninstall_cleanup_path` |
 | **PATH ensure** | `path_add_shell` / bash / zsh / fish helpers on user install |
 | **Privilege** | Type 0 only for self-management surface; no dedicated system user |
-| **Version SSOT** | `VERSION` default `1.2.3` in script config block (`VERSION="1.2.3"`) |
+| **Version SSOT** | `VERSION` default `1.2.4` in script config block (`VERSION="1.2.4"`) |
 
 #### Normative acceptance behaviors (this project)
 
@@ -219,6 +219,19 @@ Work claiming self-management support for selfmanaged is **not done** if any of 
 
 ---
 
+## Under command line for normal user only
+
+This product may run on Termux, Git Bash, Windows cmd, or the same class (this login only).
+
+**This requirement:** `version-check`, `self-update`, `self-uninstall`, and `about` run as **this login**. Global-bin uninstall may warn that Linux root is needed; that warning **MUST NOT** become an in-tool `sudo` wrap on Termux / Git Bash / Windows cmd. **MUST NOT** recommend `sudo curl | sh` as the self-update path on that class. Git Bash and Windows cmd **MUST NOT** invoke Termux `pkg`.
+
+| MUST | MUST NOT |
+|------|----------|
+| Lifecycle verbs as this login | Enable admin-privilege or dedicated-account lifecycle |
+| Fail closed when this login cannot write the installed path | Wrap `sudo` to “finish uninstall” on that class |
+
+---
+
 ## 6. Related artifacts
 
 | Artifact | Role |
@@ -232,6 +245,6 @@ Work claiming self-management support for selfmanaged is **not done** if any of 
 
 ---
 
-**Last Updated**: 2026-09-02  
+**Last Updated**: 2026-09-06  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 10, 11, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

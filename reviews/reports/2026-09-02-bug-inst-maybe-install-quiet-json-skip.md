@@ -1,12 +1,13 @@
 # Report: first-install helper can look successful without placing the program
 
 **Date:** 2026-09-02  
-**Mode:** Coverage + human-readable recast (law aligned; ship unit not patched)  
-**Product:** selfmanaged **1.2.3** (`./selfmanaged`)  
+**Updated:** 2026-09-06 — recast honesty: body below mixed report-time “not patched” notes with a later close. Canonical status remains **closed 2026-09-02** (helper patched; **TP-LC-10** / **TP-INST-MAYBE-01** **have**). Do not treat the “Suggested fix (not done)” block as current.  
+**Mode:** Coverage + human-readable recast (closed after helper patch)  
+**Product:** selfmanaged **1.2.3** (`./selfmanaged`) at close; current line is **1.2.4**  
 **Status:** closed (helper patched 2026-09-02)  
 **Finding ID:** SM-BUG-01  
 **Lesson:** L-INST-MAYBE-01  
-**Test:** TP-INST-MAYBE-01 (**TODO**)
+**Test:** TP-INST-MAYBE-01 / TP-LC-10 (**have**)
 
 ## Summary
 

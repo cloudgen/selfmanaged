@@ -3,7 +3,7 @@
 Living backlog of **bootstrap origin** improvements.  
 **Product:** selfmanaged Type 0 CLI · **Class:** bootstrap (no domain SSOT)  
 **Source reflection:** specialize gitlab-nginx from selfmanaged (2026-08-11)  
-**Last update:** 2026-08-11 (1.2.2)
+**Last update:** 2026-09-06 (SM-REV-06 / TP-JSON-RAW-01 **done**)
 
 Status: **done** · **open** · **deferred**
 
@@ -27,7 +27,7 @@ Status: **done** · **open** · **deferred**
 |----|----------|------|--------|-------|
 | SM-REV-04 | medium | Specializee **tests/README porting checklist** (rename app, GLOBAL_BIN, domain suite) | **done** (1.2.2) | See `tests/README.md` § Specializee porting |
 | SM-REV-05 | medium | Origin-review lesson: never bulk-sed org names in CIAO URLs when retargeting REQs | **done** (2026-08-11) | Captured as `L-REQ-CIAO-URL-01` in `reviews/lessons.md` |
-| SM-REV-06 | low | TP-JSON-RAW-01 suite assertion for `out_json` `@key` | **open** | Still SM-PLAN-01; code present |
+| SM-REV-06 | low | TP-JSON-RAW-01 suite assertion for `out_json` `@key` | **done** (1.2.4) | `tests/test_cli.sh`; closes SM-PLAN-01 |
 | SM-REV-07 | low | Optional GitHub Action template comment for specializees | **deferred** | Selfmanaged already has `.github/workflows/ci.yml` |
 | SM-REV-08 | n/a | Domain verbs inside selfmanaged | **rejected** | Would pollute bootstrap; reverse-copy risk |
 

@@ -133,7 +133,7 @@ When specializing product **B** from this bootstrap (**A → B only**):
 | **Primary executable** | Repo root `./selfmanaged` (POSIX `/bin/sh`, single-file for `curl \| sh`) |
 | **Dispatcher** | `app_main` (always invoked at end of script: `app_main "$@"` — no `${0##*/}` / APP_NAME basename gate; required for `curl \| sh`) |
 | **Output SSOT** | `out_text` + wrappers (`out_info`, `out_success`, `out_warn`, `out_error`, `out_die`, `out_plain`, `out_json`, …) |
-| **Version SSOT** | `VERSION` default `1.2.3` (script header / config block: `VERSION="1.2.3"`) |
+| **Version SSOT** | `VERSION` default `1.2.4` (script header / config block: `VERSION="1.2.4"`) |
 | **Install paths** | Global: `GLOBAL_BIN` default `/usr/local/bin`; User: `USER_BIN` default `${HOME}/.local/bin` |
 | **Remote channel env (help surface)** | `REPO_USER` / `REPO_NAME` (defaults `cloudgen` / `selfmanaged`); `SCRIPT_URL` composed default `https://raw.githubusercontent.com/${REPO_USER}/${REPO_NAME}/main/${APP_NAME}` (literal product default: `https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged`; override via env). **`help` / `about` MUST list these operator channel vars as designed — MUST NOT list `CHECKSUM`** (install-path runtime pin only; see `requirement-shell-automatic-checksum.md`) |
 | **Type 1 / Type 2 commands** | **None** on current surface — this tool is CLI lifecycle only |
@@ -231,6 +231,19 @@ This requirement is satisfied for the selfmanaged shell CLI when all of the foll
 
 ---
 
+## Under command line for normal user only
+
+This product may run on Termux, Git Bash, Windows cmd, or the same class (this login only).
+
+**This requirement:** the command surface stays **normal user privilege**. Help and dispatch **MUST NOT** add admin-privilege or dedicated-account verbs on that class. **MUST NOT** recommend `sudo curl | sh` as the Termux / Git Bash / Windows-cmd install path (Linux root/global one-liner remains for machines that have root). Git Bash and Windows cmd **MUST NOT** invoke Termux `pkg`.
+
+| MUST | MUST NOT |
+|------|----------|
+| Keep listed verbs as this-login self-care | Enable Type 1 host-prep or Type 2 app-ops on that class |
+| Document Type 1/2 as unused on current surface | Wrap `sudo` / `apt` / `dnf` because “install” was requested |
+
+---
+
 ## 6. Related artifacts
 
 | Artifact | Role |
@@ -246,6 +259,6 @@ This requirement is satisfied for the selfmanaged shell CLI when all of the foll
 
 ---
 
-**Last Updated**: 2026-09-02  
+**Last Updated**: 2026-09-06  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 6, 10, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

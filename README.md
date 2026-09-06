@@ -1,20 +1,36 @@
 # selfmanaged - Shell script bootstrap for self Installation & Maintenance
 
-![Version](https://img.shields.io/badge/Version-1.2.3-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.2.4-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 [![CIAO](https://img.shields.io/badge/Philosophy-CIAO%20v2.10.*-purple.svg)](https://github.com/cloudgen/ciao)
 [![Stars](https://img.shields.io/github/stars/cloudgen/selfmanaged?style=flat-square)](https://github.com/cloudgen/selfmanaged)
 
-POSIX `/bin/sh` **Type 0** CLI for **self-installation and self-maintenance**: install, version-check, self-update, self-uninstall, and about/diagnostics. Bootstrap product (no domain verbs) — ship unit is the single-file script `./selfmanaged` (**CIAO v2.10.*** / CIAO-Lite defensive design).
+**selfmanaged** is a POSIX `/bin/sh` program you install **for yourself**: it can put itself on your PATH, check for a newer copy, update itself, and remove itself. Running it with **no arguments** means **install or re-check install**, not help. The program people install is the single file `./selfmanaged`.
 
-Runtime version SSOT: `VERSION="1.2.3"` in `./selfmanaged`. Install channel SSOT: `SCRIPT_URL` composed from `REPO_USER` / `REPO_NAME` / `APP_NAME` (default `https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged`). Philosophy SSOT: **[CIAO](https://github.com/cloudgen/ciao) v2.10.*** (aligned on **v2.10.2**; Caution • Intentional • Anti-fragile • Over-engineered / Over-protect) with agent contract [CIAO-Lite](https://github.com/cloudgen/ciao-lite).
+| Box | Meaning | Example |
+|-----|---------|---------|
+| You / this login | Person installing the program for their own account | `curl -fsSL … \| sh` then `selfmanaged about` |
+| The other role | Root / elevated install for everyone on this machine | `sudo curl … \| sudo sh` → `/usr/local/bin` |
+| Not this | A specialized product with extra domain commands | This bootstrap has no extra verbs |
+
+| Includes | Excludes |
+|----------|----------|
+| Self-install, version-check, self-update, self-uninstall, about | Host package install, dedicated-account app ops |
+| Automatic SHA-256 companion check (link / value / result in human mode) | A claim that the digest is a signed release |
+
+| You do… | What it means | What you type |
+|---------|---------------|---------------|
+| Install for yourself | Copies the program into your user bin (`~/.local/bin`) | `curl -fsSL https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged \| sh` |
+| See where it lives | `about` prints install status and scratch paths | `selfmanaged about` |
+
+Runtime version (one official copy): `VERSION="1.2.4"` in `./selfmanaged`. Install channel (one official copy): `SCRIPT_URL` composed from `REPO_USER` / `REPO_NAME` / `APP_NAME` (default `https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged`). Defensive design: **[CIAO](https://github.com/cloudgen/ciao) v2.10.*** (aligned on **v2.10.2**; Caution • Intentional • Anti-fragile • Over-engineered / Over-protect) with agent contract [CIAO-Lite](https://github.com/cloudgen/ciao-lite).
 
 ## Features
 
 - Defensive design under **CIAO v2.10.*** and CIAO-Lite — Protection Zones, centralized `out_*`, fail-closed install integrity
 - Single-file script for direct execution and online install (`curl | sh` / `wget`)
 - User vs global install paths (`~/.local/bin` / `/usr/local/bin`)
-- **Type O empty argv = install-ensure** (not help): not installed → install (TTY confirm when interactive; automatic under pipe / quiet / json); already installed (local or global) → success no-op without `--force`
+- **Empty command line = install-ensure** (Type O; not help): not installed → install (yes/no on a real terminal; automatic under pipe / quiet / json); already installed (local or global) → success no-op without `--force`
 - Centralized output (`out_*`) with `--quiet`, `--json`, `--debug`
 - Self-update / version-check against `SCRIPT_URL`
 - **Per-user scratch storage:** resolves an isolated root (`/dev/shm` → `/tmp` → cache fallback), exports `TMPDIR` for install staging, and reports paths on `about` (human + JSON)
@@ -85,7 +101,7 @@ selfmanaged about
 ## Usage
 
 ```sh
-selfmanaged                # empty argv: Type O install-ensure (install or already-installed)
+selfmanaged                # no arguments: install-ensure (install or already-installed)
 selfmanaged help
 selfmanaged about
 selfmanaged version
@@ -195,7 +211,7 @@ selfmanaged.sha256    # bare SHA-256 hex of that file (companion digest)
 - Respect **CIAO v2.10.*** Protection Zones and intentional defensive checks — do not “simplify” them away.
 - After editing `./selfmanaged`, regenerate `selfmanaged.sha256` (see Examples).
 - Align user-facing docs with Config SSOTs (`VERSION`, `SCRIPT_URL`, checksum, storage behavior).
-- Product rules live under `docs/requirements/` when present (nine Active `requirement-shell-*.md` including **cli-storage**); do not invent requirement paths.
+- Product rules live under `docs/requirements/` when present (one class + ten Active `requirement-shell-*.md` including **cli-storage** and **shell-script-coding**); do not invent requirement paths.
 - Run the CI suite before opening a PR: `./tests/run.sh` (details in [`tests/README.md`](./tests/README.md)). GitHub Actions runs the same entrypoint on push/PR.
 
 ## License
@@ -206,4 +222,4 @@ Security reporting: see [`SECURITY.md`](./SECURITY.md). Maintainer contact email
 
 ## Last Update
 
-2026-09-02 — **1.2.3**: `inst_maybe_install` quiet/JSON places or fail closed (SM-BUG-01); prompts consume `TTY`; companion `selfmanaged.sha256` regenerated.
+2026-09-06 — **1.2.4**: README people-first Description; coding-style requirement; `out_json` `@key` suite lock-in (TP-JSON-RAW-01); Termux/Git Bash/Windows-cmd ceiling on related shell law; companion `selfmanaged.sha256` regenerated.

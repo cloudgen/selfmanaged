@@ -41,10 +41,10 @@ APP_NAME="selfmanaged"
 : "${APP_NAME:=selfmanaged}"
 : "${APP_DESC:=Shell script bootstrap for self Installation & Maintenance}"
 : "${SHORT_DESCRIPTION:=${APP_DESC}}"
-: "${DESCRIPTION:=POSIX /bin/sh Type 0 CLI: install, version-check, self-update, self-uninstall, and about.}"
+: "${DESCRIPTION:=POSIX /bin/sh program you install for yourself: install, version-check, self-update, self-uninstall, and about.}"
 # Product version SSOT (semver). Extractors use: grep '^VERSION="'
-VERSION="1.2.3"
-: "${VERSION:=1.2.3}"
+VERSION="1.2.4"
+: "${VERSION:=1.2.4}"
 
 # Runtime flags (safe defaults)
 : "${QUIET:=0}"
@@ -2430,7 +2430,7 @@ app_version() {
 
 app_help() {
     : "${SHORT_DESCRIPTION:=${APP_DESC:-Shell script bootstrap for self Installation & Maintenance}}"
-    : "${DESCRIPTION:=POSIX /bin/sh Type 0 CLI: install, version-check, self-update, self-uninstall, and about.}"
+    : "${DESCRIPTION:=POSIX /bin/sh program you install for yourself: install, version-check, self-update, self-uninstall, and about.}"
 
     if [ "${JSON}" -eq 1 ]; then
         out_json "success" "Help text available in human-readable mode. Run without --json." \

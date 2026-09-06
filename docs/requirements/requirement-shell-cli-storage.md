@@ -129,6 +129,18 @@ Storage resolve work for selfmanaged is **not done** if any of the following fai
 
 ---
 
+## Under command line for normal user only
+
+This product may run on Termux, Git Bash, Windows cmd, or the same class (this login only).
+
+**This requirement:** scratch roots stay **per this login** (`APP_NAME` + username). **MUST NOT** create world-writable shared dumps or `/etc` dests because storage failed. Git Bash and Windows cmd **MUST NOT** invoke Termux `pkg`.
+
+| MUST | MUST NOT |
+|------|----------|
+| Isolated scratch under this login | Elevate to “fix” a missing `/dev/shm` or `/tmp` |
+
+---
+
 ## 6. Related artifacts
 
 | Artifact | Role |
@@ -142,6 +154,6 @@ Storage resolve work for selfmanaged is **not done** if any of the following fai
 
 ---
 
-**Last Updated**: 2026-09-02  
+**Last Updated**: 2026-09-06  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 4, 5, 11, 19, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

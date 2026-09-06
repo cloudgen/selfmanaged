@@ -225,6 +225,18 @@ Integrity work for selfmanaged is **not done** if any of the following fail:
 
 ---
 
+## Under command line for normal user only
+
+This product may run on Termux, Git Bash, Windows cmd, or the same class (this login only).
+
+**This requirement:** companion digest verify runs as **this login** during install/self-update. **MUST NOT** wrap `sudo` to fetch or compare the sidecar. Git Bash and Windows cmd **MUST NOT** invoke Termux `pkg`.
+
+| MUST | MUST NOT |
+|------|----------|
+| SHA-256 companion check as this login | Elevate to “make checksum work” on that class |
+
+---
+
 ## 6. Related (versioned requirements surface only)
 
 | Artifact | Role |
@@ -249,6 +261,6 @@ Integrity work for selfmanaged is **not done** if any of the following fail:
 
 ---
 
-**Last Updated**: 2026-09-02  
+**Last Updated**: 2026-09-06  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

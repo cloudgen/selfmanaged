@@ -4,7 +4,7 @@
 **Class:** Bootstrap project — no Active domain requirements expected.  
 **Always load first:** `reviews/lessons.md`
 
-**Last plan update:** 2026-09-02 (SM-BUG-01 helper quiet/json; §1.1 on all REQs)
+**Last plan update:** 2026-09-06 (SM-PLAN-01 TP-JSON-RAW-01; coding-style REQ; README voice)
 
 ---
 

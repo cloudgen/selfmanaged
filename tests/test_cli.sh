@@ -194,4 +194,38 @@ run_test_cli() {
     assert_not_contains "self-uninstall --json must not fake success cancel" "$_out$_err" "cancelled by user"
     assert_file_exists "binary remains without --force" "${CI_USER_BIN}/selfmanaged"
     ci_cleanup_env
+
+    # --- TP-JSON-RAW-01 / TP-CLI-12: out_json @key inserts raw nested JSON ---
+    ci_isolated_env
+    ci_source_ship_unit
+    JSON=1
+    _out=$(out_json "success" "" "count" "2" "@items" '["a","b"]')
+    _ec=$?
+    assert_eq "TP-JSON-RAW-01 out_json @key exit 0" 0 "$_ec"
+    assert_contains "TP-JSON-RAW-01 type success" "$_out" '"type":"success"'
+    assert_contains "TP-JSON-RAW-01 string count stays quoted" "$_out" '"count":"2"'
+    assert_contains "TP-JSON-RAW-01 raw nested array unquoted" "$_out" '"items":["a","b"]'
+    assert_not_contains "TP-JSON-RAW-01 must not stringify the array" "$_out" '"items":"[\"a\",\"b\"]"'
+    _out=$(out_json "success" "" "@meta" '{"n":1}')
+    assert_contains "TP-JSON-RAW-01 raw nested object unquoted" "$_out" '"meta":{"n":1}'
+    JSON=0
+    _silent=$(out_json "success" "" "@items" '["x"]')
+    if [ -z "$_silent" ]; then
+        t_pass "TP-JSON-RAW-01 out_json no-ops when JSON=0"
+    else
+        t_fail "TP-JSON-RAW-01 expected empty when JSON=0, got '$(_trunc "$_silent")'"
+    fi
+    ci_cleanup_env
+
+    # --- TP-CS-01: bootstrap ship unit has no in-tool sudo wrap ---
+    if grep -q 'util_sudo()' "${SCRIPT}"; then
+        t_fail "TP-CS-01 ship unit must not define util_sudo"
+    else
+        t_pass "TP-CS-01 no util_sudo function"
+    fi
+    if grep -E '^[[:space:]]*sudo[[:space:]]' "${SCRIPT}" >/dev/null 2>&1; then
+        t_fail "TP-CS-01 ship unit must not invoke sudo as a command"
+    else
+        t_pass "TP-CS-01 no command-position sudo"
+    fi
 }

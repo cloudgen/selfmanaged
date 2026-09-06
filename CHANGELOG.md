@@ -5,6 +5,24 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.4] - 2026-09-06
+
+### Added
+
+- Active coding-style law `requirement-shell-script-coding.md` (specialize-in home; class residual no longer Gap).
+- Suite lock-in **TP-JSON-RAW-01** / **TP-CLI-12**: `out_json` `@key` inserts raw nested JSON (closes SM-PLAN-01).
+- **TP-CS-01**: ship unit has no `util_sudo` / command-position `sudo`.
+- Related shell requirements: section **Under command line for normal user only** (Termux / Git Bash / Windows cmd — Type 1/2 unused).
+
+### Changed
+
+- Product version SSOT bumped to **`1.2.4`** (ship unit, README badge, SECURITY, companion digest).
+- Product README Description uses people-first voice (install for yourself; empty command line = install-ensure). Help `DESCRIPTION` no longer leads with Type 0.
+
+### Fixed
+
+- Previous-incident lock-in: `out_json` `@key` capability had no suite assertion (L-JSON-RAW-01 / SM-PLAN-01).
+
 ## [1.2.3] - 2026-09-02
 
 ### Fixed

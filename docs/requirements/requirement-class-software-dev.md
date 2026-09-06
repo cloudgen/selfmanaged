@@ -109,7 +109,7 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 | **Architectures supported** | any arch with a POSIX sh and the external tools the script invokes (no arch-specific binary) |
 | **Git surface** | used for product publish (`github.com/cloudgen/selfmanaged`) |
 | **Ship unit / install** | yes — repo root `./selfmanaged` + companion `selfmanaged.sha256`; Type 0 online install (peer shell REQs) |
-| **Product version SSOT** | `VERSION="…"` hard-assign in `./selfmanaged` (currently `1.2.3`) |
+| **Product version SSOT** | `VERSION="…"` hard-assign in `./selfmanaged` (currently `1.2.4`) |
 
 **Residual ownership table:**
 
@@ -128,7 +128,7 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 | Interactive vs non-interactive | `requirement-shell-interactive-vs-noninteractive` | Do not duplicate |
 | Modular prefixes / single-file layout | `requirement-shell-modular-function-design` | Do not duplicate |
 | Domain features / help / about extras | *none* (bootstrap — no domain SSOT) | Add `requirement-domain-*` only when domain ops exist |
-| Coding-style related REQ | *none* (**Gap**) | Portable shell-coding lessons arrive **raw** until a language-matched coding-style requirement is specialized |
+| Coding-style related REQ | `requirement-shell-script-coding` | Specialize-in home; this file **points** |
 | Actor / role / subject / approver | *none* (considered — **no dest approver**) | Bootstrap self-install CLI; no dest review machine |
 
 ---
@@ -195,6 +195,7 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 | `requirement-shell-idempotency` | Re-run safety |
 | `requirement-shell-interactive-vs-noninteractive` | Mode policy |
 | `requirement-shell-modular-function-design` | Prefixes / single-file modularity |
+| `requirement-shell-script-coding` | POSIX `/bin/sh` coding-style specialize-in home |
 | `docs/requirements/index.md` | Registry SSOT |
 
 ---
@@ -207,6 +208,6 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 
 ---
 
-**Last Updated**: 2026-09-02  
+**Last Updated**: 2026-09-06  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 4, 5, 20, 21 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

@@ -264,7 +264,16 @@ Output-related work for selfmanaged is **not done** if any of the following fail
 6. Colors only when TTY and not quiet/json.  
 7. Fatal paths use `out_die` / structured JSON error when JSON mode is on.  
 8. Known channel/quiet gaps above are fixed or explicitly re-justified in this requirement.  
-9. Changes cite `requirement-shell-output-requirements`.
+9. Changes cite `requirement-shell-output-requirements`.  
+10. **TP-JSON-RAW-01:** `out_json` `@key` inserts caller JSON unquoted (array/object); ordinary keys stay string-escaped.
+
+### Design-time verification
+
+| TP family / ID | Suite | Status |
+|----------------|-------|--------|
+| **TP-JSON-RAW-01** / **TP-CLI-12** | `tests/test_cli.sh` | have |
+
+**Map:** `reviews/test-plan.md`
 
 ---
 
@@ -280,6 +289,6 @@ Output-related work for selfmanaged is **not done** if any of the following fail
 
 ---
 
-**Last Updated**: 2026-09-02 (§1.1 Human-facing; printf exception classes §2.1.1)  
+**Last Updated**: 2026-09-06 (TP-JSON-RAW-01 DTV)  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

@@ -266,6 +266,18 @@ A modular-structure change for selfmanaged is **not done** if any of the followi
 
 ---
 
+## Under command line for normal user only
+
+This product may run on Termux, Git Bash, Windows cmd, or the same class (this login only).
+
+**This requirement:** prefixes stay `out_` / `inst_` / `app_` / `util_` / `prompt_` for this-login self-care. **MUST NOT** add an elevation prefix or `util_sudo` family on that class. Git Bash and Windows cmd **MUST NOT** invoke Termux `pkg`.
+
+| MUST | MUST NOT |
+|------|----------|
+| Keep helper families Type-0 self-care | Add Type 1/2 helper families while this product has no such verbs |
+
+---
+
 ## 6. Related artifacts
 
 | Artifact | Role |
@@ -279,6 +291,6 @@ A modular-structure change for selfmanaged is **not done** if any of the followi
 
 ---
 
-**Last Updated**: 2026-09-02  
+**Last Updated**: 2026-09-06  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 6, 7, 8, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

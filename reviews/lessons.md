@@ -2,7 +2,7 @@
 
 **Prior-report failure modes** to re-check on every product review.  
 **Mandatory load** before findings.  
-**Last update:** 2026-09-02 (L-INST-MAYBE-01 helper quiet/json skip)
+**Last update:** 2026-09-06 (TP-JSON-RAW-01 suite lock-in)
 
 | L-ID | Failure mode | Re-check | Source | Open? |
 |------|--------------|----------|--------|-------|
@@ -20,7 +20,7 @@
 | L-HYG-01 | Companion `*.tmp` left at repo root | No `selfmanaged.sha256.tmp` | SM-HYG-01 | **Closed** (2026-07-16) |
 | L-ID-01 | APP_NAME only `:=` without hard-assign | `APP_NAME="selfmanaged"` present | SM-ID-01 | **Closed** (2026-07-16) |
 | L-CITE-TERM-01 | Bootstrap footer cites terminologies | Footer cites requirement-shell-cli-* | origin 2026-07-16 | **Closed** (2026-07-16) |
-| L-JSON-RAW-01 | `out_json` lacks `@key` raw nested path | `@key` supported in out_json | timer origin map | **Closed** (impl 2026-07-16); TP-JSON-RAW-01 still **TODO** suite lock-in (SM-PLAN-01) |
+| L-JSON-RAW-01 | `out_json` lacks `@key` raw nested path | `@key` supported in out_json; suite asserts unquoted insert | timer origin map | **Closed** (impl 2026-07-16; suite 2026-09-06 TP-JSON-RAW-01) |
 
 ## How to use
 

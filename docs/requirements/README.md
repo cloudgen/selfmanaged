@@ -2,7 +2,7 @@
 
 Authoritative product and engineering requirements for this project live here.
 
-**Current state (2026-09-02 — selfmanaged bootstrap 1.2.3):** **One** Active class requirement (`requirement-class-software-dev`) plus **nine** Active `requirement-shell-*.md` files (automatic-checksum, CLI interface, **cli-storage**, CLI zero-arguments, idempotency, interactive vs noninteractive, modular design, output, self-management). Registry: `index.md` (must stay in sync). Bootstrap project — **no domain SSOT**. Type 0 self-install/self-maintenance + per-user scratch storage. Product version SSOT: `VERSION="1.2.3"`. Do **not** invent additional requirement paths without a real ownership gap — verify on disk and register new files in `index.md` in the same change.
+**Current state (2026-09-06 — selfmanaged bootstrap 1.2.4):** **One** Active class requirement (`requirement-class-software-dev`) plus **ten** Active `requirement-shell-*.md` files (automatic-checksum, CLI interface, **cli-storage**, CLI zero-arguments, idempotency, interactive vs noninteractive, modular design, output, **script-coding**, self-management). Registry: `index.md` (must stay in sync). Bootstrap project — **no domain SSOT**. Self-install/self-maintenance + per-user scratch storage. Product version SSOT: `VERSION="1.2.4"`. Do **not** invent additional requirement paths without a real ownership gap — verify on disk and register new files in `index.md` in the same change.
 
 ## Purpose
 

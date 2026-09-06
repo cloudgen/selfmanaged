@@ -183,6 +183,18 @@ A state-changing shell change for selfmanaged is **not done** if any of the foll
 
 ---
 
+## Under command line for normal user only
+
+This product may run on Termux, Git Bash, Windows cmd, or the same class (this login only).
+
+**This requirement:** re-run safety stays **normal user privilege**. Already-installed / already-latest no-ops **MUST NOT** grow an elevation branch on that class. Git Bash and Windows cmd **MUST NOT** invoke Termux `pkg`.
+
+| MUST | MUST NOT |
+|------|----------|
+| Second run still this-login ensure | Re-run that wraps `sudo` / `apt` “to make sure” |
+
+---
+
 ## 6. Related artifacts
 
 | Artifact | Role |
@@ -196,6 +208,6 @@ A state-changing shell change for selfmanaged is **not done** if any of the foll
 
 ---
 
-**Last Updated**: 2026-09-02  
+**Last Updated**: 2026-09-06  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; related `requirement-shell-cli-interface.md`; CIAO Principles 1, 2, 3, 11, 12, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

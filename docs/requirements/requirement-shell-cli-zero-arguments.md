@@ -269,6 +269,19 @@ This requirement is satisfied when all of the following hold:
 
 ---
 
+## Under command line for normal user only
+
+This product may run on Termux, Git Bash, Windows cmd, or the same class (this login only).
+
+**This requirement:** empty command line still means **install or re-check install for this login**. On that class, Case A **MUST** place into `USER_BIN` (this login). **MUST NOT** escalate, wrap `sudo`, or recommend `sudo curl | sh` as the empty-argv path there. Git Bash and Windows cmd **MUST NOT** invoke Termux `pkg`.
+
+| MUST | MUST NOT |
+|------|----------|
+| Empty-argv ensure as this login | Empty argv that tries to become root on Termux / Git Bash / Windows cmd |
+| Quiet/json helper still places or fail closed | Add an admin-privilege empty-argv branch |
+
+---
+
 ## 6. Related artifacts
 
 | Artifact | Role |
@@ -294,7 +307,7 @@ This requirement is satisfied when all of the following hold:
 
 ---
 
-**Last Updated**: 2026-09-02  
+**Last Updated**: 2026-09-06  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 6, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).
 

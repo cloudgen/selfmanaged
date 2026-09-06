@@ -283,6 +283,18 @@ Mode-related work for selfmanaged is **not done** if any of the following fail:
 
 ---
 
+## Under command line for normal user only
+
+This product may run on Termux, Git Bash, Windows cmd, or the same class (this login only).
+
+**This requirement:** TTY confirm and pipe auto-install stay **this login**. Helpers consume `TTY`; they **MUST NOT** use TTY as a gate to start `sudo` on that class. Git Bash and Windows cmd **MUST NOT** invoke Termux `pkg`.
+
+| MUST | MUST NOT |
+|------|----------|
+| Prompt / pipe paths as this login | Password-sudo ladder copied from portable Type 1 molds |
+
+---
+
 ## 6. Related artifacts
 
 | Artifact | Role |
@@ -297,6 +309,6 @@ Mode-related work for selfmanaged is **not done** if any of the following fail:
 
 ---
 
-**Last Updated**: 2026-09-02  
+**Last Updated**: 2026-09-06  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

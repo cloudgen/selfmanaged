@@ -2,7 +2,7 @@
 
 Maps **baseline coverage** and **finding lock-in (TP-*)** to `tests/`.  
 **Suite entry:** `./tests/run.sh`  
-**Last update:** 2026-09-02 (TP-LC-10 / TP-INST-MAYBE-01 helper quiet/json **have**)
+**Last update:** 2026-09-06 (TP-JSON-RAW-01 / TP-CS-01 **have**)
 
 Status: **have** = automated today · **TODO** = needed · **n/a** = not applicable / product choice
 
@@ -29,7 +29,9 @@ Status: **have** = automated today · **TODO** = needed · **n/a** = not applica
 
 **Baseline result (2026-07-16 origin fix):** PASS=102 FAIL=0 SKIP=0  
 **Baseline re-run (2026-07-19 product review):** PASS=102 FAIL=0 SKIP=0  
-**Baseline re-run (2026-08-11 1.2.2):** PASS=102 FAIL=0 SKIP=0
+**Baseline re-run (2026-08-11 1.2.2):** PASS=102 FAIL=0 SKIP=0  
+**Baseline re-run (2026-09-02 1.2.3):** PASS=108 FAIL=0 SKIP=0  
+**Baseline re-run (2026-09-06 1.2.4):** PASS=117 FAIL=0 SKIP=0
 
 ---
 
@@ -48,7 +50,8 @@ Status: **have** = automated today · **TODO** = needed · **n/a** = not applica
 | TP-UNIN-01 | L-UNIN-01 | self-uninstall --json no force → confirm_required | **have** | test_cli + lifecycle |
 | TP-SETU-01 | L-SETU-01 | env -u HOME still works | **have** | test_cli |
 | TP-CITE-TERM-01 | L-CITE-TERM-01 | Bootstrap footer cites requirements | **have** | static fix |
-| TP-JSON-RAW-01 | L-JSON-RAW-01, SM-PLAN-01 | `out_json` `@key` raw nested | **TODO** (impl present) | Code has `@*` branch; no suite assertion yet — mark **have** only after test or reclassify n/a |
+| TP-JSON-RAW-01 / TP-CLI-12 | L-JSON-RAW-01, SM-PLAN-01 | `out_json` `@key` raw nested | **have** | `tests/test_cli.sh` — unquoted array/object; string keys stay quoted; JSON=0 no-op |
+| TP-CS-01 | coding-style REQ | No `util_sudo` / command-position `sudo` | **have** | `tests/test_cli.sh` static |
 | TP-ISO-GLOBAL-01 | SM-REV-01 / gitlab-nginx specialize | Isolated GLOBAL_BIN for lifecycle | **have** | helpers + lifecycle/cli env |
 | TP-INST-MAYBE-01 / TP-LC-10 | SM-BUG-01, L-INST-MAYBE-01 | Not installed + QUIET/JSON **through `inst_maybe_install`** must place or fail closed (not `return 0` skip) | **have** | `tests/test_install_lifecycle.sh` |
 
