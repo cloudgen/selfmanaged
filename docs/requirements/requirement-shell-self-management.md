@@ -56,7 +56,7 @@ User-facing names **MUST** be stable unless this requirement is explicitly revis
 
 Shell implementation **SHOULD** use `inst_*` helpers for install/lifecycle and `app_*` for help/about/dispatch; **MUST NOT** bury binary lifecycle under domain product prefixes without a specialized requirement.
 
-Related Type 0 commands (`version`, `install`, `help`) are owned by `requirement-shell-cli-interface.md` but **MUST** stay consistent with this lifecycle model.
+Related Type 0 commands (`version`, `self-install` / `install` alias, `help`) are owned by `requirement-shell-cli-interface.md` and `requirement-shell-cli-self-install.md` but **MUST** stay consistent with this lifecycle model.
 
 ### 2.2 Self-update (normative)
 
@@ -126,7 +126,8 @@ Root may write global install path; non-root uses user path. Do not assume root 
 | **Product / binary** | `selfmanaged` (`APP_NAME`) |
 | **Implementation file** | Repo root `./selfmanaged` |
 | **Dispatcher** | `app_main` routes `version-check` → `ver_check`; `self-update` → `inst_self_update`; `self-uninstall` → `inst_self_uninstall`; `about` → `app_about` |
-| **Install orchestrator SSOT** | `inst_perform_install` (+ prepare / download with or without checksum / atomic install) |
+| **CLI self-install SSOT** | `inst_self_install` (empty argv / `self-install` / `install` alias; copy when `$0` is a script) — `requirement-shell-cli-self-install.md` |
+| **Install orchestrator SSOT** | `inst_perform_install` (+ prepare / download with or without checksum / atomic install) — **download** path reused by `self-update` and interpreter `$0` |
 | **Version compare** | `ver_gt` (pure POSIX); local version via `inst_get_version` |
 | **Install presence** | `inst_is_installed` |
 | **Paths** | `GLOBAL_BIN` default `/usr/local/bin`; `USER_BIN` default `${HOME}/.local/bin` |
@@ -138,7 +139,7 @@ Root may write global install path; non-root uses user path. Do not assume root 
 | **Uninstall steps** | `inst_self_uninstall_determine_bin` → `inst_self_uninstall_confirm_and_remove` → `inst_self_uninstall_cleanup_path` |
 | **PATH ensure** | `path_add_shell` / bash / zsh / fish helpers on user install |
 | **Privilege** | Type 0 only for self-management surface; no dedicated system user |
-| **Version SSOT** | `VERSION` default `1.2.4` in script config block (`VERSION="1.2.4"`) |
+| **Version SSOT** | `VERSION` default `1.3.0` in script config block (`VERSION="1.3.0"`) |
 
 #### Normative acceptance behaviors (this project)
 
@@ -237,6 +238,7 @@ This product may run on Termux, Git Bash, Windows cmd, or the same class (this l
 | Artifact | Role |
 |----------|------|
 | `docs/requirements/requirement-shell-cli-interface.md` | Command surface, flags, dispatcher |
+| `docs/requirements/requirement-shell-cli-self-install.md` | First-shot CLI place (`self-install`; copy vs download) |
 | `docs/requirements/requirement-shell-idempotency.md` | Re-run safety for ensure ops |
 | `docs/requirements/requirement-shell-output-requirements.md` | Lifecycle messaging / quiet / JSON |
 | `docs/requirements/requirement-shell-modular-function-design.md` | `inst_*` / `out_*` ownership |
@@ -245,6 +247,6 @@ This product may run on Termux, Git Bash, Windows cmd, or the same class (this l
 
 ---
 
-**Last Updated**: 2026-09-06  
+**Last Updated**: 2026-09-17  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 10, 11, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

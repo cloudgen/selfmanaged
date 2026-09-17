@@ -2,11 +2,12 @@
 
 **Prior-report failure modes** to re-check on every product review.  
 **Mandatory load** before findings.  
-**Last update:** 2026-09-06 (TP-JSON-RAW-01 suite lock-in)
+**Last update:** 2026-09-17 (L-DEST-0711-01)
 
 | L-ID | Failure mode | Re-check | Source | Open? |
 |------|--------------|----------|--------|-------|
-| L-INST-MAYBE-01 | First-install helper returns success under quiet/json without placing; peer REQ used to document that skip | Helper calls `inst_perform_install` under QUIET/JSON; both REQs say the same; specializee copies of the helper must not skip | SM-BUG-01 | **Closed** (2026-09-02 helper + TP-LC-10) |
+| L-DEST-0711-01 | Global dest `chmod +x` on `mktemp` 0600 mints **0711**; other logins cannot open shebang (`/bin/sh: Permission denied`) | No live `chmod +x` (**TP-SI-07**); isolated `GLOBAL_BIN` **0755** (**TP-SI-08**); specializees keep `inst_cli_dest_mode` | ollama-cli 1.5.1 `sudo curl \| sh` → `-rwx--x--x` | **Closed** (origin 1.3.0 dest mode + TP-SI-07/08) |
+| L-INST-MAYBE-01 | First-install helper returns success under quiet/json without placing; peer REQ used to document that skip | Helper calls `inst_self_install` under QUIET/JSON; both REQs say the same; specializee copies of the helper must not skip | SM-BUG-01 | **Closed** (2026-09-02 helper + TP-LC-10) |
 | L-REQ-CIAO-URL-01 | Bulk-sed of org names when retargeting REQs rewrites CIAO philosophy URLs (`cloudgen/ciao`) into product-channel identity | Grep REQs for `github.com/cloudgen/ciao` after retarget; never `s/cloudgen/<product>/g` over whole docs | SM-REV-05 | **Open** (process vigilance; teach on next origin review) |
 | L-OPS-SSH-01 | Active ssh-user-profile GitHub DENIED while another profile is git-capable; default ≠ repository-user | Pre-git report: active profile + git-capable list; activate matching REPO_USER | SM-OPS-SSH-01 | **Closed** (2026-07-19 activate cloudgen) |
 | L-STOR-01 | Storage resolver dead code; tiers 1–2 no mkdir; not called from main/about | Call sites of `util_resolve_storage`; mkdir all tiers; about JSON storage fields | SM-STOR-01 | **Closed** (2026-07-16 wire) |

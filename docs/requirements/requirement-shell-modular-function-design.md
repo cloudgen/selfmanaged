@@ -61,7 +61,7 @@ Optional multi-file layout under `src/` for future authoring **MAY** exist only 
 | Prefix | Category | Purpose | Example functions |
 |--------|----------|---------|-------------------|
 | `out_` | Output system | All user-facing and machine-readable output | `out_text`, `out_info`, `out_success`, `out_json`, `out_die` |
-| `inst_` | Installation & self-management | Install, self-update, self-uninstall, install detect | `inst_perform_install`, `inst_self_update`, `inst_is_installed` |
+| `inst_` | Installation & self-management | Self-install, self-update, self-uninstall, install detect | `inst_self_install`, `inst_perform_install`, `inst_self_update`, `inst_is_installed` |
 | `util_` | General utilities | Reusable helpers (backup, path resolve, storage) | `util_backup`, `util_resolve_storage`, `util_get_install_bin_path` |
 | `app_` | General app CLI surface (product-neutral) | Entry, dispatch, about/help/version presentation | `app_main`, `app_about`, `app_help`, `app_version` |
 | `ver_` | Version comparison | Semantic version handling | `ver_gt`, `ver_check` |
@@ -179,7 +179,7 @@ function_name() {
 | Prefix | Live examples in `./selfmanaged` |
 |--------|----------------------------------|
 | `out_` | `out_text`, `out_success`, `out_info`, `out_warn`, `out_error`, `out_die`, `out_plain`, `out_msg_n`, `out_empty_line`, `out_double_line`, `out_json`, `out_json_error` |
-| `inst_` | `inst_perform_install`, `inst_perform_install_prepare_target`, `inst_perform_install_download_with_checksum`, `inst_perform_install_download_without_checksum`, `inst_perform_install_atomic_install`, `inst_maybe_install`, `inst_self_update`, `inst_self_uninstall` (+ determine_bin / confirm_and_remove / cleanup_path), `inst_is_installed`, `inst_get_version` |
+| `inst_` | `inst_perform_install`, `inst_perform_install_prepare_target`, `inst_perform_install_download_with_checksum`, `inst_perform_install_download_without_checksum`, `inst_perform_install_atomic_install`, `inst_argv0_is_shell_interpreter`, `inst_resolve_self_script`, `inst_cli_dest_mode`, `inst_self_install_copy_from_script`, `inst_self_install`, `inst_maybe_install`, `inst_self_update`, `inst_self_uninstall` (+ determine_bin / confirm_and_remove / cleanup_path), `inst_is_installed`, `inst_get_version` |
 | `ver_` | `ver_gt`, `ver_check` |
 | `path_` | `path_add_bashrc`, `path_add_zshrc`, `path_add_fish`, `path_add_shell` |
 | `util_` | `util_json_escape`, `util_sha256_file`, `util_fetch_remote_version`, `util_get_install_bin_path`, `util_backup`, `util_resolve_storage` (**wired** from `app_main` / `app_about`; SSOT: `requirement-shell-cli-storage.md`), `util_get_current_shell` |
@@ -284,6 +284,7 @@ This product may run on Termux, Git Bash, Windows cmd, or the same class (this l
 |----------|------|
 | `docs/requirements/requirement-shell-cli-interface.md` | Command surface owned by `app_*` dispatch |
 | `docs/requirements/requirement-shell-self-management.md` | Lifecycle owned by `inst_*` / `ver_*` |
+| `docs/requirements/requirement-shell-cli-self-install.md` | `inst_self_install` / `$0` copy / dest-mode helpers |
 | `docs/requirements/requirement-shell-idempotency.md` | Re-run safety inside ensure helpers |
 | `docs/requirements/requirement-shell-output-requirements.md` | `out_*` ownership |
 | `docs/requirements/index.md` | Registry SSOT |
@@ -291,6 +292,6 @@ This product may run on Termux, Git Bash, Windows cmd, or the same class (this l
 
 ---
 
-**Last Updated**: 2026-09-06  
+**Last Updated**: 2026-09-17  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 6, 7, 8, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

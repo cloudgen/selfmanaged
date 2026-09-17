@@ -20,24 +20,27 @@ run_test_install_lifecycle() {
     fi
 
     # --- TP-LC-10 / TP-INST-MAYBE-01: helper itself under JSON/QUIET (not empty argv) ---
+    # Subprocess $0 is the interpreter so the helper takes the download path
+    # (sourcing in this process would copy the test runner).
     ci_source_ship_unit
-    EFFECTIVE_STORAGE_DIR=$(util_resolve_storage)
-    export EFFECTIVE_STORAGE_DIR TMPDIR="${EFFECTIVE_STORAGE_DIR}"
-    SCRIPT_URL="${CI_SCRIPT_URL}"
-    TTY=0
-    FORCE_REINSTALL=0
-
+    _lib="${CI_HOME}/ship-as-lib.sh"
     JSON=1
     QUIET=1
-    inst_maybe_install >/dev/null 2>"${CI_HOME}/maybe-json.err"
+    TTY=0
+    FORCE_REINSTALL=0
+    HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" \
+        SCRIPT_URL="${CI_SCRIPT_URL}" JSON=1 QUIET=1 TTY=0 FORCE_REINSTALL=0 \
+        sh -c '. "$1"; EFFECTIVE_STORAGE_DIR=$(util_resolve_storage); export EFFECTIVE_STORAGE_DIR TMPDIR="${EFFECTIVE_STORAGE_DIR}"; inst_maybe_install' \
+        sh "${_lib}" >/dev/null 2>"${CI_HOME}/maybe-json.err"
     _ec=$?
     assert_eq "TP-LC-10 JSON helper not-installed exit 0" 0 "$_ec"
     assert_file_exists "TP-LC-10 JSON helper placed binary" "${CI_USER_BIN}/selfmanaged"
 
     rm -f "${CI_USER_BIN}/selfmanaged"
-    JSON=0
-    QUIET=1
-    inst_maybe_install >/dev/null 2>"${CI_HOME}/maybe-quiet.err"
+    HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" \
+        SCRIPT_URL="${CI_SCRIPT_URL}" JSON=0 QUIET=1 TTY=0 FORCE_REINSTALL=0 \
+        sh -c '. "$1"; EFFECTIVE_STORAGE_DIR=$(util_resolve_storage); export EFFECTIVE_STORAGE_DIR TMPDIR="${EFFECTIVE_STORAGE_DIR}"; inst_maybe_install' \
+        sh "${_lib}" >/dev/null 2>"${CI_HOME}/maybe-quiet.err"
     _ec=$?
     assert_eq "TP-LC-10 QUIET helper not-installed exit 0" 0 "$_ec"
     assert_file_exists "TP-LC-10 QUIET helper placed binary" "${CI_USER_BIN}/selfmanaged"
@@ -50,14 +53,11 @@ run_test_install_lifecycle() {
 
     ci_isolated_env
     ci_source_ship_unit
-    EFFECTIVE_STORAGE_DIR=$(util_resolve_storage)
-    export EFFECTIVE_STORAGE_DIR TMPDIR="${EFFECTIVE_STORAGE_DIR}"
-    SCRIPT_URL="http://127.0.0.1:1/selfmanaged-unreachable"
-    JSON=1
-    QUIET=1
-    TTY=0
-    FORCE_REINSTALL=0
-    inst_maybe_install >/dev/null 2>"${CI_HOME}/maybe-fail.err"
+    _lib="${CI_HOME}/ship-as-lib.sh"
+    HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" \
+        SCRIPT_URL="http://127.0.0.1:1/selfmanaged-unreachable" JSON=1 QUIET=1 TTY=0 FORCE_REINSTALL=0 \
+        sh -c '. "$1"; EFFECTIVE_STORAGE_DIR=$(util_resolve_storage); export EFFECTIVE_STORAGE_DIR TMPDIR="${EFFECTIVE_STORAGE_DIR}"; inst_maybe_install' \
+        sh "${_lib}" >/dev/null 2>"${CI_HOME}/maybe-fail.err"
     _ec=$?
     if [ "$_ec" -ne 0 ]; then
         t_pass "TP-LC-10 JSON helper bad channel exits non-zero"
@@ -179,10 +179,11 @@ run_test_install_lifecycle() {
     assert_contains "self-update already-latest message" "$_out" "Already running the latest version"
 
     # --- human install transparency (companion link / expected / result) ---
-    # Reinstall with --force so human messages are emitted on download path.
+    # Reinstall with --force on the *download* path (interpreter $0 / stdin).
+    # `sh ./selfmanaged --force install` would copy $0 and skip the companion.
     _out=$(
         HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
-        sh "${SCRIPT}" --force install 2>"${_errf}"
+        sh -s -- --force install < "${SCRIPT}" 2>"${_errf}"
     )
     _ec=$?
     assert_eq "human --force install exit 0" 0 "$_ec"
@@ -220,7 +221,7 @@ run_test_install_lifecycle() {
     _out=$(
         HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         CHECKSUM="0000000000000000000000000000000000000000000000000000000000000000" \
-        sh "${SCRIPT}" --json install 2>"${_errf}"
+        sh -s -- --json install < "${SCRIPT}" 2>"${_errf}"
     )
     _ec=$?
     _err=$(cat "${_errf}" 2>/dev/null || true)
@@ -233,7 +234,7 @@ run_test_install_lifecycle() {
     _out=$(
         HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" SCRIPT_URL="${CI_SCRIPT_URL}" \
         CHECKSUM="${_good}" \
-        sh "${SCRIPT}" --json install 2>"${_errf}"
+        sh -s -- --json install < "${SCRIPT}" 2>"${_errf}"
     )
     _ec=$?
     _err=$(cat "${_errf}" 2>/dev/null || true)

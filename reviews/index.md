@@ -1,7 +1,7 @@
 # Reviews index — selfmanaged
 
 **Registry** of review plan artifacts and run reports. Keep rows in sync with disk.  
-**Updated:** 2026-09-06 (SM-PLAN-01 / TP-JSON-RAW-01 closed; coding-style REQ)
+**Updated:** 2026-09-17 (1.3.0 self-install dest-mode lock-in; TP-SI-01..08)
 
 ## Plan artifacts
 
@@ -45,5 +45,5 @@
 
 - Product class: **bootstrap project** (no domain SSOT); **software-development** class law Active.  
 - Storage is wired Type 0 scratch isolation — not domain product ops.  
-- Version **1.2.4** target/runtime/CHANGELOG/SECURITY aligned (bumped 2026-09-06).  
+- Version **1.3.0** target/runtime/CHANGELOG/SECURITY aligned (bumped 2026-09-17). Self-install dest **0755** global / **0700** local; specializee **TP-SI-07** / **TP-SI-08**.  
 - See **`revision-plan.md`** for specializee reflection backlog.  

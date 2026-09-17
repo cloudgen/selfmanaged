@@ -6,9 +6,10 @@
 # FULL FEATURED SELF-MANAGED PROGRAM (CIAO / CIAO-Lite Compliant)
 #
 # This is the single executable POSIX /bin/sh implementation of the selfmanaged
-# tool (Type 0 bootstrap: install, version-check, self-update, self-uninstall, about).
+# tool (Type 0 bootstrap: self-install, version-check, self-update, self-uninstall, about).
 # Project requirements (docs/requirements/ only — never cite templates here):
 # - requirement-shell-cli-interface.md
+# - requirement-shell-cli-self-install.md    (self-install; $0 copy vs download; dest 0755/0700)
 # - requirement-shell-cli-zero-arguments.md  (Type O empty argv = install-ensure)
 # - requirement-shell-cli-storage.md         (util_resolve_storage + about fields)
 # - requirement-shell-idempotency.md
@@ -41,10 +42,10 @@ APP_NAME="selfmanaged"
 : "${APP_NAME:=selfmanaged}"
 : "${APP_DESC:=Shell script bootstrap for self Installation & Maintenance}"
 : "${SHORT_DESCRIPTION:=${APP_DESC}}"
-: "${DESCRIPTION:=POSIX /bin/sh program you install for yourself: install, version-check, self-update, self-uninstall, and about.}"
+: "${DESCRIPTION:=POSIX /bin/sh program you install for yourself: self-install, version-check, self-update, self-uninstall, and about.}"
 # Product version SSOT (semver). Extractors use: grep '^VERSION="'
-VERSION="1.2.4"
-: "${VERSION:=1.2.4}"
+VERSION="1.3.0"
+: "${VERSION:=1.3.0}"
 
 # Runtime flags (safe defaults)
 : "${QUIET:=0}"
@@ -878,17 +879,22 @@ inst_perform_install_download_without_checksum() {
 # =============================================================================
 #
 # GENERAL PURPOSE:
-# Makes the downloaded file executable and atomically moves it to the final
-# INSTALL_PATH. Also handles PATH addition for user installs and out_success output.
+# Atomically moves the staged file to INSTALL_PATH with dest mode
+# (0755 global / 0700 local via inst_cli_dest_mode). PATH rc for user installs.
 #
-# Last reviewed: 29 April 2026
+# MUST NOT chmod +x on mktemp 0600 — that mints 0711; other logins cannot
+# open the shebang (/bin/sh: Permission denied). PP-A-28 / L-DEST-0711-01.
+#
+# Last updated: 2026-09-17
 # =============================================================================
 
 inst_perform_install_atomic_install() {
     local tmp_file="$1"
     local downloaded_checksum_ok="$2"
 
-    chmod +x "${tmp_file}" 2>/dev/null || true
+    local _mode
+    _mode=$(inst_cli_dest_mode)
+    chmod "${_mode}" "${tmp_file}" 2>/dev/null || true
 
     rm -f "${INSTALL_PATH}" 2>/dev/null
     if ! mv "${tmp_file}" "${INSTALL_PATH}" 2>/dev/null; then
@@ -900,6 +906,7 @@ inst_perform_install_atomic_install() {
         fi
         return 1
     fi
+    chmod "${_mode}" "${INSTALL_PATH}" 2>/dev/null || true
 
     # Add ~/.local/bin to PATH for normal user installs
     if [ "$IS_ROOT" -eq 0 ]; then
@@ -918,11 +925,257 @@ inst_perform_install_atomic_install() {
 }
 
 # =============================================================================
+# inst_argv0_is_shell_interpreter() - True when $0 is sh/bash/zsh/…
+# =============================================================================
+#
+# GENERAL PURPOSE:
+# Detect curl|sh / stdin-pipe invocations where process $0 is the interpreter
+# (not the ship unit). Login-dash prefixes are stripped.
+#
+# ALIGNMENT (live requirements only):
+# - requirement-shell-cli-self-install.md
+#
+# Last updated: 2026-09-17
+# =============================================================================
+inst_argv0_is_shell_interpreter() {
+    local _a0="${1:-}"
+    local _base="${_a0##*/}"
+    case "${_base}" in
+        -*) _base="${_base#-}" ;;
+    esac
+    case "${_base}" in
+        sh|bash|dash|ash|zsh|ksh|mksh|yash|posh|csh|tcsh|fish|busybox)
+            return 0
+            ;;
+    esac
+    return 1
+}
+
+# =============================================================================
+# inst_resolve_self_script() - Absolute path of the running script, or empty
+# =============================================================================
+#
+# GENERAL PURPOSE:
+# If $0 is a readable regular file (not an interpreter), print its absolute
+# path. Basename-only invocations use command -v.
+#
+# PRINTF EXCEPTION (class B – function return-via-stdout): path or nothing.
+#
+# ALIGNMENT (live requirements only):
+# - requirement-shell-cli-self-install.md
+#
+# Last updated: 2026-09-17
+# =============================================================================
+inst_resolve_self_script() {
+    local _a0="${1:-}"
+    local _dir _found
+    if [ -z "${_a0}" ]; then
+        return 1
+    fi
+    if inst_argv0_is_shell_interpreter "${_a0}"; then
+        return 1
+    fi
+    if [ -f "${_a0}" ] && [ -r "${_a0}" ]; then
+        _dir=$(CDPATH= cd -- "$(dirname -- "${_a0}")" && pwd) || return 1
+        printf '%s\n' "${_dir}/${_a0##*/}"
+        return 0
+    fi
+    case "${_a0}" in
+        */*) return 1 ;;
+    esac
+    _found=$(command -v "${_a0}" 2>/dev/null) || return 1
+    if [ -f "${_found}" ] && [ -r "${_found}" ]; then
+        printf '%s\n' "${_found}"
+        return 0
+    fi
+    return 1
+}
+
+# =============================================================================
+# inst_cli_dest_mode() - 0755 global / 0700 local for self-install dest
+# =============================================================================
+#
+# ALIGNMENT (live requirements only):
+# - requirement-shell-cli-self-install.md
+#
+# Last updated: 2026-09-17
+# =============================================================================
+inst_cli_dest_mode() {
+    if [ "$(id -u 2>/dev/null || echo 1)" -eq 0 ]; then
+        printf '%s\n' "0755"
+    else
+        printf '%s\n' "0700"
+    fi
+}
+
+# =============================================================================
+# inst_self_install_copy_from_script() - Copy $0 to dest without download
+# =============================================================================
+#
+# GENERAL PURPOSE:
+# Stage as ${APP_NAME}-XXXXXX under TMPDIR/cache, chmod dest mode, atomic mv.
+# MUST NOT chmod +x on mktemp 0600 (that mints 0711).
+#
+# ALIGNMENT (live requirements only):
+# - requirement-shell-cli-self-install.md
+#
+# Last updated: 2026-09-17
+# =============================================================================
+inst_self_install_copy_from_script() {
+    local _src="$1"
+    local _mode="$2"
+    local _tmp
+    : "${APP_NAME:=selfmanaged}"
+    : "${JSON:=0}"
+    : "${INSTALL_PATH:=}"
+
+    _tmp=$(mktemp -t "${APP_NAME}-XXXXXX")
+    if [ -z "${_tmp}" ]; then
+        if [ "${JSON}" -eq 1 ]; then
+            out_json_error "Failed to create temporary file" "io_error"
+        else
+            out_error "Failed to create temporary file"
+        fi
+        return 1
+    fi
+    if ! cp "${_src}" "${_tmp}"; then
+        rm -f "${_tmp}" 2>/dev/null || true
+        if [ "${JSON}" -eq 1 ]; then
+            out_json_error "Failed to copy ${_src}" "io_error"
+        else
+            out_error "Failed to copy ${_src}"
+        fi
+        return 1
+    fi
+    chmod "${_mode}" "${_tmp}" 2>/dev/null || true
+    rm -f "${INSTALL_PATH}" 2>/dev/null
+    if ! mv "${_tmp}" "${INSTALL_PATH}" 2>/dev/null; then
+        rm -f "${_tmp}" 2>/dev/null || true
+        if [ "${JSON}" -eq 1 ]; then
+            out_json_error "Failed to move to ${INSTALL_PATH}" "io_error"
+        else
+            out_error "Failed to move to ${INSTALL_PATH}"
+        fi
+        return 1
+    fi
+    chmod "${_mode}" "${INSTALL_PATH}" 2>/dev/null || true
+    return 0
+}
+
+# =============================================================================
+# inst_self_install() - Place the CLI only (copy from script $0, else download)
+# =============================================================================
+#
+# GENERAL PURPOSE:
+# Type O CLI place/ensure. Empty argv and the self-install verb (install is
+# an alias). Script $0 → copy without download. Interpreter $0 → channel
+# download. Dest mode 0755 global / 0700 local. PATH rc MAY.
+#
+# ALIGNMENT (live requirements only):
+# - requirement-shell-cli-self-install.md
+# - requirement-shell-cli-zero-arguments.md
+# - requirement-shell-automatic-checksum.md
+#
+# Last updated: 2026-09-17
+# =============================================================================
+inst_self_install() {
+    : "${JSON:=0}"
+    : "${FORCE_REINSTALL:=0}"
+    : "${APP_NAME:=selfmanaged}"
+    : "${VERSION:=}"
+    : "${HOME:=/tmp}"
+    : "${GLOBAL_BIN:=/usr/local/bin}"
+    : "${USER_BIN:=${HOME}/.local/bin}"
+    : "${REMOTE_VERSION:=${VERSION}}"
+    : "${CHECKSUM:=}"
+    : "${SCRIPT_URL:=}"
+
+    if [ "$(id -u 2>/dev/null || echo 1)" -eq 0 ]; then
+        IS_ROOT=1
+        INSTALL_PATH="${GLOBAL_BIN}/${APP_NAME}"
+    else
+        IS_ROOT=0
+        INSTALL_PATH="${USER_BIN}/${APP_NAME}"
+    fi
+    local _mode _src _tmp _ck
+    _mode=$(inst_cli_dest_mode)
+
+    if [ "${JSON}" -eq 0 ]; then
+        out_info "Starting self-install of ${APP_NAME} ${REMOTE_VERSION}..."
+    fi
+
+    path_add_shell
+
+    if inst_is_installed && [ "${FORCE_REINSTALL}" -eq 0 ]; then
+        if [ "${JSON}" -eq 1 ]; then
+            out_json "out_success" "${APP_NAME} is already installed."
+        else
+            out_success "${APP_NAME} is already installed."
+            out_info "Use --force only to replace deliberately (or run: ${APP_NAME} self-update)."
+        fi
+        return 0
+    fi
+
+    if ! inst_perform_install_prepare_target; then
+        return 1
+    fi
+
+    _src=$(inst_resolve_self_script "$0") || _src=""
+    if [ -n "${_src}" ]; then
+        if [ "${JSON}" -eq 0 ]; then
+            out_info "Installing from local script ${_src} (no download)."
+        fi
+        if ! inst_self_install_copy_from_script "${_src}" "${_mode}"; then
+            return 1
+        fi
+        if [ "${JSON}" -eq 1 ]; then
+            out_json "out_success" "${APP_NAME} ${REMOTE_VERSION} successfully installed to ${INSTALL_PATH}" "path" "${INSTALL_PATH}"
+        else
+            out_success "${APP_NAME} ${REMOTE_VERSION} successfully installed to ${INSTALL_PATH}"
+        fi
+        return 0
+    fi
+
+    _tmp=$(mktemp -t "${APP_NAME}-XXXXXX")
+    if [ -z "${_tmp}" ]; then
+        if [ "${JSON}" -eq 1 ]; then
+            out_json_error "Failed to create temporary file" "io_error"
+        else
+            out_error "Failed to create temporary file"
+        fi
+        return 1
+    fi
+    _ck=0
+    : "${INST_AUTO_CHECKSUM_OK:=0}"
+    if [ -n "${CHECKSUM}" ]; then
+        if inst_perform_install_download_with_checksum "${_tmp}"; then
+            _ck=1
+        else
+            rm -f "${_tmp}" 2>/dev/null || true
+            return 1
+        fi
+    else
+        INST_AUTO_CHECKSUM_OK=0
+        if ! inst_perform_install_download_without_checksum "${_tmp}"; then
+            rm -f "${_tmp}" 2>/dev/null || true
+            return 1
+        fi
+        _ck=${INST_AUTO_CHECKSUM_OK:-0}
+    fi
+    if ! inst_perform_install_atomic_install "${_tmp}" "${_ck}"; then
+        rm -f "${_tmp}" 2>/dev/null || true
+        return 1
+    fi
+    chmod "${_mode}" "${INSTALL_PATH}" 2>/dev/null || true
+    return 0
+}
+
+# =============================================================================
 # inst_maybe_install() - Friendly installation prompt
 # =============================================================================
 #
 # Respects both --quiet and --json modes.
-# Quiet/JSON: no prompt — MUST call inst_perform_install (not return 0 skip).
+# Quiet/JSON: no prompt — MUST call inst_self_install (CLI place; not return 0 skip).
 # Interactive gate consumes process TTY (set once at startup), not a second [ -t.
 # Uses prompt_yes_no() as single source of truth for confirmation.
 #
@@ -939,8 +1192,11 @@ inst_perform_install_atomic_install() {
 #   - JSON/QUIET returned 0 without placing (SM-BUG-01). Specializees that
 #     copy this helper as Case A SSOT inherited silent success. Now calls
 #     inst_perform_install and returns its status. Prompt gate reads TTY.
+# 2026-09-17:
+#   - Quiet/JSON and TTY yes now call inst_self_install (copy when $0 is a
+#     script; dest 0755 global / 0700 local).
 #
-# Last updated: 2026-09-02
+# Last updated: 2026-09-17
 # =============================================================================
 
 inst_maybe_install() {
@@ -960,9 +1216,9 @@ inst_maybe_install() {
     if inst_is_installed && [ "${FORCE_REINSTALL}" -eq 0 ]; then
         return 0
     fi
-    # Quiet or JSON: place with no prompt (requirement-shell-cli-zero-arguments §2.4).
+    # Quiet or JSON: CLI place with no prompt (requirement-shell-cli-self-install).
     if [ "${JSON}" -eq 1 ] || [ "${QUIET}" -eq 1 ]; then
-        inst_perform_install
+        inst_self_install
         return $?
     fi
     out_empty_line
@@ -994,7 +1250,7 @@ inst_maybe_install() {
     fi
 
     if [ "${_maybe_should_install}" -eq 1 ]; then
-        inst_perform_install
+        inst_self_install
         return $?
     fi
     return 0
@@ -2271,7 +2527,7 @@ app_about() {
     : "${QUIET:=0}"
     : "${APP_NAME:=selfmanaged}"
     # Version comes from global SSOT (VERSION="…" hard-assign near top); default only if unset
-    : "${VERSION:=1.2.2}"
+    : "${VERSION:=1.3.0}"
     : "${GLOBAL_BIN:=/usr/local/bin}"
     : "${USER_BIN:=${HOME}/.local/bin}"
     : "${SCRIPT_URL:=}"
@@ -2395,6 +2651,7 @@ app_about() {
     out_empty_line
     out_info "Useful commands:"
     out_info "   ${APP_NAME} help           → Full usage"
+    out_info "   ${APP_NAME} self-install   → Place this CLI (copy when you run the file)"
     out_info "   ${APP_NAME} self-update    → Update to latest version"
     out_info "   ${APP_NAME} self-uninstall → Clean removal from system"
     out_info "   ${APP_NAME} --json         → Machine-readable output"
@@ -2405,7 +2662,7 @@ app_about() {
 
 app_version() {
     : "${APP_NAME:=selfmanaged}"
-    : "${VERSION:=1.2.2}"
+    : "${VERSION:=1.3.0}"
     : "${JSON:=0}"
     if [ "${JSON}" -eq 1 ]; then
         # Same machine contract as historical app_main inline path
@@ -2430,12 +2687,12 @@ app_version() {
 
 app_help() {
     : "${SHORT_DESCRIPTION:=${APP_DESC:-Shell script bootstrap for self Installation & Maintenance}}"
-    : "${DESCRIPTION:=POSIX /bin/sh program you install for yourself: install, version-check, self-update, self-uninstall, and about.}"
+    : "${DESCRIPTION:=POSIX /bin/sh program you install for yourself: self-install, version-check, self-update, self-uninstall, and about.}"
 
     if [ "${JSON}" -eq 1 ]; then
         out_json "success" "Help text available in human-readable mode. Run without --json." \
             "command" "help" \
-            "note" "Use --json with version, about, version-check, install, self-update, self-uninstall."
+            "note" "Use --json with version, about, version-check, self-install, self-update, self-uninstall."
         return 0
     fi
 
@@ -2452,7 +2709,8 @@ app_help() {
     out_empty_line
 
     out_info "Self-Management (Type 0 - any user):"
-    out_plain "  install              Install ${APP_NAME} (root→global, user→~/.local/bin)"
+    out_plain "  self-install         Place ${APP_NAME} (copy when \$0 is this file; pipe downloads; 0755 global / 0700 local)"
+    out_plain "  install              Same as self-install (compatibility alias)"
     out_plain "  version              Show current version"
     out_plain "  about                Show detailed diagnostics"
     out_plain "  version-check        Compare local vs remote version (needs SCRIPT_URL)"
@@ -2562,22 +2820,24 @@ app_main() {
     export EFFECTIVE_STORAGE_DIR STORAGE_DIR
     export TMPDIR="${EFFECTIVE_STORAGE_DIR}"
 
-    # === ZERO-ARG = Type O install-ensure (curl | sh contract) ===
+    # === ZERO-ARG = Type O CLI self-install-ensure (curl | sh contract) ===
     # Product type: Type O (online-install) — not Type N help-default.
     # Empty argv always means "ensure installed", never help, never domain setup.
     # Cases: not installed | installed local | installed global
-    # - not installed → install (TTY prompt via inst_maybe_install; non-TTY auto)
-    # - already installed → success no-op (inst_perform_install); no --force required
-    # - --force / FORCE_REINSTALL only for deliberate re-download/replace
-    # Exit status must reflect install outcome (failed download/checksum → non-zero).
+    # - not installed → self-install (TTY prompt via inst_maybe_install; non-TTY auto)
+    # - already installed → success no-op (inst_self_install); no --force required
+    # - script $0 copies; interpreter $0 downloads
+    # - --force / FORCE_REINSTALL only for deliberate replace
+    # Exit status must reflect install outcome (failed copy/download/checksum → non-zero).
     # SSOT: docs/requirements/requirement-shell-cli-zero-arguments.md
+    #       docs/requirements/requirement-shell-cli-self-install.md
     # Specializee: do NOT replace this block with domain full-setup.
     if [ $# -eq 0 ]; then
         if [ "${JSON}" -eq 1 ] || [ "${QUIET}" -eq 1 ]; then
-            inst_perform_install
+            inst_self_install
             exit $?
         elif inst_is_installed; then
-            inst_perform_install
+            inst_self_install
             exit $?
         else
             inst_maybe_install
@@ -2595,7 +2855,7 @@ app_main() {
             # --- DOMAIN_DISPATCH_FLAGS (specializee injection) ---
             # Specialized products MAY parse domain-only flags here (e.g. --no-cloudflare).
             # --- end DOMAIN_DISPATCH_FLAGS ---
-            version|about|help|version-check|self-update|self-uninstall|install)
+            version|about|help|version-check|self-update|self-uninstall|self-install|install)
                 COMMAND="$1"
                 ;;
             # --- DOMAIN_DISPATCH_COMMANDS (specializee injection) ---
@@ -2630,8 +2890,8 @@ app_main() {
         self-uninstall)
             inst_self_uninstall
             ;;
-        install)
-            inst_perform_install
+        self-install|install)
+            inst_self_install
             ;;
         # --- DOMAIN_DISPATCH_ROUTES (specializee injection) ---
         # Specialized products MAY route domain commands here (call domain handlers).

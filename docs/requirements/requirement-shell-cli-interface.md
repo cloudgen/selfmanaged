@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-cli-interface.md  
-**Status**: Active (Version 1.1.1)  
+**Status**: Active (Version 1.2.0)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -13,7 +13,7 @@ It defines a **Type 0–centric self-managed shell CLI** (install / update / uni
 
 ### 1.1 Human-facing
 
-**In one sentence:** This file is the **menu**: which words you type (`version`, `help`, `install`, `self-update`, `self-uninstall`, …), which flags (`--quiet`, `--json`, `--force`), and that **you run those as yourself** — this product does not change the host OS or switch to a dedicated account.
+**In one sentence:** This file is the **menu**: which words you type (`version`, `help`, `self-install`, `self-update`, `self-uninstall`, …), which flags (`--quiet`, `--json`, `--force`), and that **you run those as yourself** — this product does not change the host OS or switch to a dedicated account.
 
 | Box | Meaning | Example |
 |-----|---------|---------|
@@ -33,7 +33,7 @@ It defines a **Type 0–centric self-managed shell CLI** (install / update / uni
 
 | You do… | What it means | What you type |
 |---------|---------------|---------------|
-| See the menu | Help lists install, version, about, self-update, self-uninstall, and flags. An unknown word is an error, not a silent no-op. | `selfmanaged help` |
+| See the menu | Help lists self-install, version, about, self-update, self-uninstall, and flags. An unknown word is an error, not a silent no-op. | `selfmanaged help` |
 | Ask for JSON | Same verbs; structured objects; no human banners. | `selfmanaged --json version` |
 
 ---
@@ -47,7 +47,7 @@ Every CIAO-Lite shell CLI **MUST** expose a documented command set. Commands **M
 | Category | Privilege | Meaning | Portable examples |
 |----------|-----------|---------|-------------------|
 | **Type 0 – Self-management / CLI lifecycle** | Invoking user (no elevation required for user-owned install) | Manage the CLI binary and diagnostics | `version`, `about`, `help`, `version-check`, `self-update`, `self-uninstall` |
-| **Type 0 – Install CLI binary** | Invoking user (root → global path; non-root → user path) | First-time or explicit placement of the CLI | `install`; empty argv **Type O install-ensure** (not installed / local / global) — `requirement-shell-cli-zero-arguments.md` |
+| **Type 0 – Install CLI binary** | Invoking user (root → global path; non-root → user path) | First-time or explicit placement of the CLI | `self-install` (canonical); `install` alias; empty argv **Type O install-ensure** — `requirement-shell-cli-zero-arguments.md` · `requirement-shell-cli-self-install.md` |
 | **Type 1 – Host preparation** | Elevated (internal escalation when designed) | Host packages, system user create, Docker engine | *Not in scope for current product surface* |
 | **Type 2 – App ops under system user** | Dedicated least-privilege system user | App install/configure/runtime under app identity | *Not in scope for current product surface* |
 
@@ -73,8 +73,8 @@ Additional flags **MAY** be added only when documented here (or a superseding re
 
 1. **Single entry:** A single main dispatcher (e.g. `app_main`) **MUST** parse global flags and route commands.
 2. **Unknown command:** **MUST** fail loudly with a clear error and pointer to `help` (via output SSOT).
-3. **Zero-arg install-ensure:** Empty argv **MUST** mean install-ensure (not help). Not installed → install (TTY may confirm; non-interactive / quiet / json auto). Already installed (global or local) → success no-op (“already installed”), not help and not blind reinstall. Full contract: `requirement-shell-cli-zero-arguments.md`.
-4. **Idempotent install skip:** Install **MUST** no-op when already installed unless force/reinstall policy is set.
+3. **Zero-arg install-ensure:** Empty argv **MUST** mean CLI self-install-ensure (not help). Not installed → `inst_self_install` (TTY may confirm via `inst_maybe_install`; non-interactive / quiet / json auto). Already installed (global or local) → success no-op (“already installed”), not help and not blind reinstall. How (copy vs download, dest mode): `requirement-shell-cli-self-install.md`. Full empty-argv matrix: `requirement-shell-cli-zero-arguments.md`.
+4. **Idempotent install skip:** Self-install **MUST** no-op when already installed unless force/reinstall policy is set.
 5. **No raw user I/O:** User-facing messages **MUST** go through the centralized `out_*` system (see output template/term).
 
 ### 2.4 Output and mode contracts (portable)
@@ -124,6 +124,7 @@ When specializing product **B** from this bootstrap (**A → B only**):
 | **Help / about** | Keep Type 0 rows; add domain rows/fields at the injection anchors | Replace help entirely with domain-only text |
 | **Requirements retarget** | Rewrite product identity only; keep CIAO / peer URLs (`github.com/cloudgen/ciao`, …) | Bulk `sed` org renames that break philosophy links |
 | **Domain law** | After domain extend: one Active `requirement-domain-*` with four pillars | Domain law only on A; reverse-copy B domain onto A |
+| **Global dest mode** | Keep `inst_cli_dest_mode`; `${GLOBAL_BIN}/B` **0755** so other logins can open the shebang | `chmod +x` on mktemp (**0711**); treat USER_BIN-only as dest-mode proof |
 
 ### 2.6 Implementation Notes (this project)
 
@@ -133,7 +134,7 @@ When specializing product **B** from this bootstrap (**A → B only**):
 | **Primary executable** | Repo root `./selfmanaged` (POSIX `/bin/sh`, single-file for `curl \| sh`) |
 | **Dispatcher** | `app_main` (always invoked at end of script: `app_main "$@"` — no `${0##*/}` / APP_NAME basename gate; required for `curl \| sh`) |
 | **Output SSOT** | `out_text` + wrappers (`out_info`, `out_success`, `out_warn`, `out_error`, `out_die`, `out_plain`, `out_json`, …) |
-| **Version SSOT** | `VERSION` default `1.2.4` (script header / config block: `VERSION="1.2.4"`) |
+| **Version SSOT** | `VERSION` default `1.3.0` (script header / config block: `VERSION="1.3.0"`) |
 | **Install paths** | Global: `GLOBAL_BIN` default `/usr/local/bin`; User: `USER_BIN` default `${HOME}/.local/bin` |
 | **Remote channel env (help surface)** | `REPO_USER` / `REPO_NAME` (defaults `cloudgen` / `selfmanaged`); `SCRIPT_URL` composed default `https://raw.githubusercontent.com/${REPO_USER}/${REPO_NAME}/main/${APP_NAME}` (literal product default: `https://raw.githubusercontent.com/cloudgen/selfmanaged/main/selfmanaged`; override via env). **`help` / `about` MUST list these operator channel vars as designed — MUST NOT list `CHECKSUM`** (install-path runtime pin only; see `requirement-shell-automatic-checksum.md`) |
 | **Type 1 / Type 2 commands** | **None** on current surface — this tool is CLI lifecycle only |
@@ -143,8 +144,9 @@ When specializing product **B** from this bootstrap (**A → B only**):
 
 | Command | Type | Handler (current) | Required behavior |
 |---------|------|-------------------|-------------------|
-| *(no args — empty argv)* | Type 0 | `app_main` → `inst_maybe_install` / `inst_perform_install` | **Type O install-ensure** (not Type N help): not-installed / local / global; never help; see `requirement-shell-cli-zero-arguments.md` |
-| `install` | Type 0 | `inst_perform_install` | Install binary for current privilege (root→global, user→local); idempotent unless force reinstall |
+| *(no args — empty argv)* | Type 0 | `app_main` → `inst_maybe_install` / `inst_self_install` | **Type O CLI self-install-ensure** (not Type N help): not-installed / local / global; never help; copy when `$0` is the script. See `requirement-shell-cli-zero-arguments.md` · `requirement-shell-cli-self-install.md` |
+| `self-install` | Type 0 | `inst_self_install` | Place **this CLI** (copy when `$0` is a script; download when piped). Dest **0700** local / **0755** global. Dual mention: `requirement-shell-cli-self-install.md`. Sample: `selfmanaged self-install` |
+| `install` | Type 0 | `inst_self_install` | **Alias of `self-install`** (this product has no payload). Same copy/download/dest-mode contract. Sample: `selfmanaged install` |
 | `version` | Type 0 | `app_main` / `app_version` | Print local version; JSON object when `--json` |
 | `about` | Type 0 | `app_about` | Diagnostics: install presence, global/local paths, user, shell, TTY; JSON when `--json`; **no `CHECKSUM` field** |
 | `version-check` | Type 0 | `ver_check` | Compare local vs remote `VERSION` from `SCRIPT_URL`; fail clearly if URL unset/unreachable |
@@ -164,7 +166,7 @@ When specializing product **B** from this bootstrap (**A → B only**):
 #### Dispatcher acceptance criteria (this project)
 
 1. Unknown token after flag parse → `out_die` with pointer to `selfmanaged help`.  
-2. Zero-arg → install-ensure: not installed → install; already installed (local or global) → already-installed success (not help); failures non-zero.  
+2. Zero-arg → CLI self-install-ensure: not installed → `inst_self_install`; already installed (local or global) → already-installed success (not help); failures non-zero.  
 3. Command routing table in `app_main` **must** include every row in the command table above.  
 4. Help text **must** stay aligned with that table (no orphan commands, no listed-but-unrouted commands).  
 5. User-facing strings **must not** use raw `echo`/`printf` outside the `out_*` system (protected low-level helpers excepted only if already CIAO-marked and not for general messages).
@@ -252,6 +254,7 @@ This product may run on Termux, Git Bash, Windows cmd, or the same class (this l
 | `docs/requirements/requirement-shell-output-requirements.md` | Output SSOT and channels |
 | `docs/requirements/requirement-shell-interactive-vs-noninteractive.md` | TTY / automation mode behavior |
 | `docs/requirements/requirement-shell-cli-zero-arguments.md` | Empty argv install-ensure (not installed / local / global) |
+| `docs/requirements/requirement-shell-cli-self-install.md` | Dual mention `self-install`; `$0` copy vs download; dest 0755/0700 |
 | `docs/requirements/requirement-shell-idempotency.md` | Re-run safety for ensure ops |
 | `docs/requirements/requirement-shell-modular-function-design.md` | Prefix ownership (`app_`, `inst_`, `out_*`) |
 | `docs/requirements/index.md` | Registry SSOT |
@@ -259,6 +262,6 @@ This product may run on Termux, Git Bash, Windows cmd, or the same class (this l
 
 ---
 
-**Last Updated**: 2026-09-06  
+**Last Updated**: 2026-09-17  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 6, 10, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

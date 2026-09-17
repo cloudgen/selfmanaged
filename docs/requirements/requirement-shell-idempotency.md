@@ -93,7 +93,7 @@ Force **MUST NOT** be used as a silent way to skip integrity verification.
 | **Product / binary** | `selfmanaged` (`APP_NAME`) |
 | **Implementation file** | Repo root `./selfmanaged` |
 | **Install detect SSOT** | `inst_is_installed` / `inst_get_version` |
-| **Install ensure SSOT** | `inst_perform_install` (+ download/atomic helpers) |
+| **Install ensure SSOT** | `inst_self_install` (copy when `$0` is a script) + download/atomic helpers for interpreter `$0` / `self-update` |
 | **Force reinstall var** | `FORCE_REINSTALL` (default `0`); CLI `--force` must set this per `requirement-shell-cli-interface.md` |
 | **Remote channel** | `SCRIPT_URL` (required for version-check / self-update network steps) |
 | **User PATH integration** | `path_add_*` / `path_add_shell` — append only if marker/line absent |
@@ -103,7 +103,7 @@ Force **MUST NOT** be used as a silent way to skip integrity verification.
 
 | Command / path | Desired state | Re-run when already good | Force / special |
 |----------------|---------------|--------------------------|-----------------|
-| `install` | Binary present at privilege-correct path | **Success no-op**; human: already installed; JSON success | `FORCE_REINSTALL=1` re-downloads/replaces |
+| `self-install` / `install` (alias) | Binary present at privilege-correct path | **Success no-op**; human: already installed; JSON success | `FORCE_REINSTALL=1` re-copies or re-downloads per `$0` |
 | Zero-arg install-ensure (**Type O**) | Binary present (local or global) | Second zero-arg when installed: **success no-op** “already installed” (not help, not reinstall) without force | Same force rules as install; see `requirement-shell-cli-zero-arguments.md` |
 | `inst_maybe_install` | Installed, user declined, **or** quiet/json Case A placed | Already installed → return success without re-prompt storm. Quiet/json when **not** installed **MUST** place (not a success skip). | — |
 | `self-update` | Local version equals remote (or newer under project policy) | **Success no-op** “already latest” when versions equal and force off | When versions differ, reinstall via install path; force may force reinstall; **must not silent-downgrade** without explicit force policy (see self-management term) |
@@ -156,7 +156,7 @@ Force **MUST NOT** be used as a silent way to skip integrity verification.
 **Future AI assistants, Grok, or maintainers MUST NOT**:
 
 1. Remove or weaken “already installed / already latest / nothing to uninstall” success paths so that re-runs fail when healthy.  
-2. Make `install` always re-download when the binary is already present without force/reinstall policy.  
+2. Make `self-install` / `install` always re-download when the binary is already present without force/reinstall policy.  
 3. Append duplicate PATH export blocks on every re-run.  
 4. Strip `~/.local/bin` from PATH when other tools still use that directory.  
 5. Treat force as a way to skip checksum/digest verification.  
@@ -172,7 +172,7 @@ Force **MUST NOT** be used as a silent way to skip integrity verification.
 
 A state-changing shell change for selfmanaged is **not done** if any of the following fail:
 
-1. Second `install` with healthy install and force off exits success without reinstall.  
+1. Second `self-install` / `install` with healthy install and force off exits success without reinstall.  
 2. Second `self-update` when local equals remote and force off exits success without reinstall.  
 3. Second `self-uninstall` when not installed exits success.  
 4. PATH ensure does not duplicate lines when re-run.  
@@ -201,6 +201,7 @@ This product may run on Termux, Git Bash, Windows cmd, or the same class (this l
 |----------|------|
 | `docs/requirements/requirement-shell-cli-interface.md` | Command surface, flags, force wiring |
 | `docs/requirements/requirement-shell-cli-zero-arguments.md` | Empty argv ensure for not-installed / local / global |
+| `docs/requirements/requirement-shell-cli-self-install.md` | Self-install re-run no-op; copy vs download |
 | `docs/requirements/requirement-shell-self-management.md` | Lifecycle commands; integrity + downgrade policy |
 | `docs/requirements/requirement-shell-output-requirements.md` | Messages on no-op / already-done paths |
 | `docs/requirements/index.md` | Registry SSOT |
@@ -208,6 +209,6 @@ This product may run on Termux, Git Bash, Windows cmd, or the same class (this l
 
 ---
 
-**Last Updated**: 2026-09-06  
+**Last Updated**: 2026-09-17  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; related `requirement-shell-cli-interface.md`; CIAO Principles 1, 2, 3, 11, 12, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

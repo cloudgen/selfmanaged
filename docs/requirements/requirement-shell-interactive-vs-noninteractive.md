@@ -149,9 +149,9 @@ interactive   non-interactive
 
 | Command / path | Interactive (TTY, not quiet/json) | Non-interactive / quiet / json |
 |----------------|-----------------------------------|--------------------------------|
-| Zero-arg, **not** installed (letter **O**: no-args = install-ensure) | `inst_maybe_install`: show note + `prompt_yes_no` install confirm | Quiet/json: `inst_perform_install` without prompt (dispatcher **and** helper). Non-TTY human path: auto-install message + install |
-| Zero-arg, **already** installed local or global (**Type O**) | `inst_perform_install` success no-op (“already installed”); **not** help; no re-download without force | Same (quiet/json: structured success no-op) |
-| `install` | Install with human `out_*` messages | No prompt; honor force for reinstall; JSON structured results |
+| Zero-arg, **not** installed (letter **O**: no-args = install-ensure) | `inst_maybe_install`: show note + `prompt_yes_no`; yes → `inst_self_install` (copy when `$0` is the script) | Quiet/json: `inst_self_install` without prompt (dispatcher **and** helper). Non-TTY human path: auto-install message + `inst_self_install` |
+| Zero-arg, **already** installed local or global (**Type O**) | `inst_self_install` success no-op (“already installed”); **not** help; no re-copy/re-download without force | Same (quiet/json: structured success no-op) |
+| `self-install` / `install` (alias) | Place CLI with human `out_*` messages; copy when `$0` is the script | No prompt; honor force for replace; JSON structured results |
 | `self-uninstall` | `prompt_yes_no` unless `--force` | Without force: fail closed with explicit “requires --force” (JSON: `out_json_error` / `confirm_required`); never pretend user cancelled; with `--force`: remove without confirm |
 | `self-update` / `version-check` | Human status messages | No prompts; fail loud if `SCRIPT_URL` missing; JSON structured results |
 | `about` / `version` / `help` | Human diagnostics / help | Quiet: suppress human; JSON: structured object only |
@@ -220,13 +220,13 @@ prompt_ask() {
 | Condition | Behavior |
 |-----------|----------|
 | Already installed (force off) | Success no-op; do not ask again |
-| Quiet or JSON | **No prompt.** **MUST** call `inst_perform_install` and return its status. **MUST NOT** `return 0` without placing (unless already-installed no-op). Empty-argv quiet/json in `app_main` also calls `inst_perform_install` directly — **both** paths **MUST** place. Copied products **MUST NOT** keep a helper that skips install under quiet/json. |
-| `TTY=1` interactive (not quiet/json) | Prompt install yes/no via `prompt_yes_no` |
-| Non-TTY (pipe / automation) | **Auto-install** with a clear human message when not quiet/json |
+| Quiet or JSON | **No prompt.** **MUST** call `inst_self_install` and return its status. **MUST NOT** `return 0` without placing (unless already-installed no-op). Empty-argv quiet/json in `app_main` also calls `inst_self_install` directly — **both** paths **MUST** place. Copied products **MUST NOT** keep a helper that skips install under quiet/json. |
+| `TTY=1` interactive (not quiet/json) | Prompt install yes/no via `prompt_yes_no`; yes → `inst_self_install` (copy when `$0` is the script) |
+| Non-TTY (pipe / automation) | **Auto-install** with a clear human message when not quiet/json → `inst_self_install` |
 
 This dual policy is intentional: **pipe / quiet / json first-install proceeds**; **destructive uninstall does not** without `--force`.
 
-**Honesty (this ship unit, 2026-09-02):** `prompt_yes_no`, `prompt_ask`, and `inst_maybe_install` consume process `TTY`. Quiet/JSON Case A through the helper calls `inst_perform_install` (SM-BUG-01).
+**Honesty (this ship unit, 2026-09-17):** `prompt_yes_no`, `prompt_ask`, and `inst_maybe_install` consume process `TTY`. Quiet/JSON Case A through the helper calls `inst_self_install` (SM-BUG-01 still: place, not skip).
 
 ### 2.6 Why This Requirement Exists (Direct CIAO Alignment)
 
@@ -301,6 +301,7 @@ This product may run on Termux, Git Bash, Windows cmd, or the same class (this l
 |----------|------|
 | `docs/requirements/requirement-shell-cli-interface.md` | Flags and commands |
 | `docs/requirements/requirement-shell-cli-zero-arguments.md` | Empty argv install-ensure matrix |
+| `docs/requirements/requirement-shell-cli-self-install.md` | TTY yes copies `$0` when it is the script |
 | `docs/requirements/requirement-shell-output-requirements.md` | quiet/json/debug output contracts |
 | `docs/requirements/requirement-shell-self-management.md` | Uninstall confirm / force policy |
 | `docs/requirements/requirement-shell-idempotency.md` | Re-run safety under automation |
@@ -309,6 +310,6 @@ This product may run on Termux, Git Bash, Windows cmd, or the same class (this l
 
 ---
 
-**Last Updated**: 2026-09-06  
+**Last Updated**: 2026-09-17  
 **Owner**: selfmanaged project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

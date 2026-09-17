@@ -2,7 +2,7 @@
 
 Maps **baseline coverage** and **finding lock-in (TP-*)** to `tests/`.  
 **Suite entry:** `./tests/run.sh`  
-**Last update:** 2026-09-06 (TP-JSON-RAW-01 / TP-CS-01 **have**)
+**Last update:** 2026-09-17 (TP-SI-01..06 **have**)
 
 Status: **have** = automated today · **TODO** = needed · **n/a** = not applicable / product choice
 
@@ -31,7 +31,8 @@ Status: **have** = automated today · **TODO** = needed · **n/a** = not applica
 **Baseline re-run (2026-07-19 product review):** PASS=102 FAIL=0 SKIP=0  
 **Baseline re-run (2026-08-11 1.2.2):** PASS=102 FAIL=0 SKIP=0  
 **Baseline re-run (2026-09-02 1.2.3):** PASS=108 FAIL=0 SKIP=0  
-**Baseline re-run (2026-09-06 1.2.4):** PASS=117 FAIL=0 SKIP=0
+**Baseline re-run (2026-09-06 1.2.4):** PASS=117 FAIL=0 SKIP=0  
+**Baseline re-run (2026-09-17 1.3.0):** PASS=141 FAIL=0 SKIP=0
 
 ---
 
@@ -54,6 +55,14 @@ Status: **have** = automated today · **TODO** = needed · **n/a** = not applica
 | TP-CS-01 | coding-style REQ | No `util_sudo` / command-position `sudo` | **have** | `tests/test_cli.sh` static |
 | TP-ISO-GLOBAL-01 | SM-REV-01 / gitlab-nginx specialize | Isolated GLOBAL_BIN for lifecycle | **have** | helpers + lifecycle/cli env |
 | TP-INST-MAYBE-01 / TP-LC-10 | SM-BUG-01, L-INST-MAYBE-01 | Not installed + QUIET/JSON **through `inst_maybe_install`** must place or fail closed (not `return 0` skip) | **have** | `tests/test_install_lifecycle.sh` |
+| TP-SI-01 | shell-cli-self-install | `self-install` with script `$0` copies; dead `SCRIPT_URL` still places | **have** | `tests/test_cli.sh` |
+| TP-SI-02 | shell-cli-self-install | Local dest mode **0700** | **have** | `tests/test_cli.sh` |
+| TP-SI-03 | shell-cli-self-install | NI empty argv is self-install (copy), not help | **have** | `tests/test_cli.sh` |
+| TP-SI-04 | shell-cli-self-install | Interpreter `$0` (`sh -s`) uses channel download | **have** | `tests/test_cli.sh` |
+| TP-SI-05 | shell-cli-self-install | Second `self-install` already-installed no-op | **have** | `tests/test_cli.sh` |
+| TP-SI-06 | shell-cli-self-install | Help lists `self-install` | **have** | `tests/test_cli.sh` |
+| TP-SI-07 | L-DEST-0711-01 | No live `chmod +x`; `inst_cli_dest_mode` names 0755/0700 | **have** | `tests/test_cli.sh` |
+| TP-SI-08 | L-DEST-0711-01 | Isolated GLOBAL_BIN dest **0755**; leftover **0711** healed | **have** | `tests/test_cli.sh` |
 
 ---
 

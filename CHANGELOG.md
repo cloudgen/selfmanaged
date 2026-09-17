@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-09-17
+
+### Added
+
+- Named CLI place verb **`self-install`** (`inst_self_install`). When process `$0` is the script (not `/bin/sh` / `/bin/bash` / …), place **copies that file** and does not download. Interpreter `$0` (`curl | sh`) still downloads with companion digest.
+- Dest mode on place: **0755** global, **0700** local (no `chmod +x` **0711** trap).
+- Product law `requirement-shell-cli-self-install.md`. Suite **TP-SI-01** .. **TP-SI-08** (including no `chmod +x` and isolated `GLOBAL_BIN` **0755**).
+- Specializee dest-mode contract: B **MUST** keep `inst_cli_dest_mode` and **MUST NOT** restore `chmod +x` (global **0711** → `/bin/sh: Permission denied` for other logins).
+
+### Changed
+
+- Product version SSOT bumped to **`1.3.0`** (ship unit, README badge, SECURITY, companion digest).
+- Empty argv / TTY yes / quiet / json first-shot call `inst_self_install` instead of download-always `inst_perform_install`.
+- `install` is a **compatibility alias** of `self-install` (this product has no payload).
+- Help lists `self-install` first.
+
 ## [1.2.4] - 2026-09-06
 
 ### Added
